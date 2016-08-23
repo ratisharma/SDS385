@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015) (preloaded format=xelatex 2015.5.24)  23 AUG 2016 10:35
+This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015) (preloaded format=xelatex 2015.5.24)  23 AUG 2016 12:11
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -159,10 +159,10 @@ File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
 AED: lastpage setting LastPage
 [3] (./exercises01.aux) ) 
 Here is how much of TeX's memory you used:
- 3148 strings out of 493706
- 42413 string characters out of 6145769
- 150703 words of memory out of 5000000
- 6491 multiletter control sequences out of 15000+600000
+ 3133 strings out of 493706
+ 42277 string characters out of 6145769
+ 139703 words of memory out of 5000000
+ 6476 multiletter control sequences out of 15000+600000
  9250 words of font info for 33 fonts, out of 8000000 for 9000
  1328 hyphenation exceptions out of 8191
  26i,11n,43p,344b,1904s stack positions out of 5000i,500n,10000p,200000b,80000s
