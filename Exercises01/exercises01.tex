@@ -166,6 +166,9 @@
 
 \begin{homeworkProblem}
 \begin{enumerate}[(A)]
+%%
+%%
+%%
 	\item %a
 		\begin{align}
 			\hat{\beta} &= \argmin_{\beta \in \mathbb{R}^p} \sum_{i=1}^{N} \frac{w_i}{2} \left ( y_i - x_i^T\beta \right )^2 \\
@@ -205,10 +208,44 @@
 		\end{enumerate}
 		Summing these terms and equaling them to zero yields
 		\begin{align}
-			X^TWX\beta - X^TWY &= 0 \\
-			\therefore (X^TWX)\hat{\beta} &= X^TWY
+			X^TWX\beta - X^TWY &= 0 \therefore \\
+			 (X^TWX)\hat{\beta} &= X^TWY
 		\end{align}
+%%
+%%
+%%
 	\item %b
+		The brute force method of solving Eqn. (16) is the \emph{inversion method}, i.e.
+		\begin{align}
+			\hat{\beta} = (X^TWX)^{-1}X^TWy.
+		\end{align} 
+		However, this method is computationally expensive. Therefore I propose two alternative methods to solving this matrix equation using matrix decomposition, the LU decomposition and the Cholesky decomposition.
+		\begin{enumerate}[(i)]
+			\item 
+			\textbf{LU Decomposition} \\
+			Let 
+			\begin{align}
+				D = X^TWX, \;\;C=X^TWy
+			\end{align}
+			so 
+			\begin{align}
+				C\hat{\beta} = D.
+			\end{align}
+			We decompose matrix $C$ into a product of a lower-triangular matrix and an upper-triangular matrix, so that
+			\begin{align}
+				C &= LU \therefore \\
+				LU\hat{\beta} &= D.
+			\end{align}
+			Furthermore we define matrix $A = U\hat{\beta}$. Thus we are left with two matrix equations to solve. 
+			\begin{align}
+				LA &= D \\
+				U\hat{\beta} &= A
+			\end{align}
+			This method will be much less computationally intensive than the inversion method because of the fact that the two left-matrices $L$ and $U$ are triangular. 
+		\item 
+		\textbf{Cholesky Decomposition} \\
+		We use a similar method as the LU decomposition, but this time we decompose matrix $C$ into the form the matrix product $LL^T$. So our method is exactly the same as above, except now $U = L^T$. However, we gain a computational advantage from symmetric exploitation.
+		\end{enumerate}
 	\item %c
 	\item %d
 \end{enumerate}
@@ -220,11 +257,53 @@
 %%	PROBLEM 2
 %%----------------------------------------------------------------------------------------
 
+\pagebreak
+
 \begin{homeworkProblem}
 \begin{enumerate}[(A)]
-\item
-\item
-\item
+%%
+%%
+%%
+\item % A
+	\begin{align}
+		\ell(\beta) &= -\log \left \{ \prod_{i=1}^N p(y_i | \beta)  \right \} \\
+		&= -\log \left \{ \prod_{i=1}^N (w_i)^{y_i}(1-w_i)^{1-y_i}  \right \} \\
+		&= -\log \left \{ \prod_{i=1}^N \left (\frac{1}{1+\exp(-x_i^T\beta)} \right )^{y_i} \left (1-\frac{1}{1+\exp(-x_i^T\beta)} \right )^{1-y_i}  \right \} \\
+		&= -\log \left \{ \prod_{i=1}^N \left (\frac{1}{1+\exp(-x_i^T\beta)} \right )^{y_i} \left (\frac{\exp(-x_i^T\beta)}{1+\exp(-x_i^T\beta)} \right )^{1-y_i}  \right \} \\
+		&= - \left \{ \sum_{i=1}^N \left [ (y_i)(-\log(1+\exp(-x_i^T\beta)))  + (1-y_i)(-x_i^T\beta-\log(1+\exp(-x_i^T\beta)))\right ] \right \} \\
+		&= -\left \{ \sum_{i=1}^N [-x_i^T\beta - \log(1+\exp(-x_i^T))+y_ix_i^T\beta] \right \} \\
+		&= \sum_{i=1}^{N} (x_i^T\beta + \log(1+\exp(-x_i^T\beta))-y_ix_i^T\beta)
+		% -\log \left \{ \prod_{i=1}^N   \right \}
+	\end{align}
+%%
+%%
+%%
+%%
+%%
+\item % B
+%%
+%%
+%%
+%%
+%%
+\item % C
+%%
+%%
+%%
+%%
+%%
+\item % D
+%%
+%%
+%%
+%%
+%%
+\item % E
+%%
+%%
+%%
+%%
+%%
 \end{enumerate}
 \end{homeworkProblem}
 
