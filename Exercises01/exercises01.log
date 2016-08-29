@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015) (preloaded format=xelatex 2015.5.24)  26 AUG 2016 14:12
+This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015) (preloaded format=xelatex 2015.5.24)  29 AUG 2016 08:20
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -174,7 +174,45 @@ Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
 LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
 (Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
 ))
-(/usr/local/texlive/2015/texmf-dist/tex/latex/listings/lstlang1.sty
+(/usr/local/texlive/2015/texmf-dist/tex/latex/algorithms/algorithm.sty
+Invalid UTF-8 byte or sequence at line 11 replaced by U+FFFD.
+Package: algorithm 2009/08/24 v0.1 Document Style `algorithm' - floating enviro
+nment
+
+(/usr/local/texlive/2015/texmf-dist/tex/latex/float/float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count107
+\float@exts=\toks23
+\float@box=\box30
+\@float@everytoks=\toks24
+\@floatcapt=\box31
+)
+(/usr/local/texlive/2015/texmf-dist/tex/latex/base/ifthen.sty
+Package: ifthen 2014/09/29 v1.1c Standard LaTeX ifthen package (DPC)
+)
+\@float@every@algorithm=\toks25
+\c@algorithm=\count108
+)
+(/usr/local/texlive/2015/texmf-dist/tex/latex/algorithmicx/algpseudocode.sty
+Package: algpseudocode 
+
+(/usr/local/texlive/2015/texmf-dist/tex/latex/algorithmicx/algorithmicx.sty
+Package: algorithmicx 2005/04/27 v1.2 Algorithmicx
+
+Document Style algorithmicx 1.2 - a greatly improved `algorithmic' style
+\c@ALG@line=\count109
+\c@ALG@rem=\count110
+\c@ALG@nested=\count111
+\ALG@tlm=\skip55
+\ALG@thistlm=\skip56
+\c@ALG@Lnr=\count112
+\c@ALG@blocknr=\count113
+\c@ALG@storecount=\count114
+\c@ALG@tmpcounter=\count115
+\ALG@tmplength=\skip57
+)
+Document Style - pseudocode environments for use with the `algorithmicx' style
+) (/usr/local/texlive/2015/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2014/09/06 1.5e listings language file
 )
 (/usr/local/texlive/2015/texmf-dist/tex/latex/listings/lstlang2.sty
@@ -183,40 +221,45 @@ File: lstlang2.sty 2014/09/06 1.5e listings language file
 (/usr/local/texlive/2015/texmf-dist/tex/latex/listings/lstlang3.sty
 File: lstlang3.sty 2014/09/06 1.5e listings language file
 )
-\c@homeworkProblemCounter=\count107
+\c@homeworkProblemCounter=\count116
 
 (./exercises01.aux)
 \openout1 = `exercises01.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 155.
-LaTeX Font Info:    ... okay on input line 155.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 155.
-LaTeX Font Info:    ... okay on input line 155.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 155.
-LaTeX Font Info:    ... okay on input line 155.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 155.
-LaTeX Font Info:    ... okay on input line 155.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 155.
-LaTeX Font Info:    ... okay on input line 155.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 155.
-LaTeX Font Info:    ... okay on input line 155.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 157.
+LaTeX Font Info:    ... okay on input line 157.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 157.
+LaTeX Font Info:    ... okay on input line 157.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 157.
+LaTeX Font Info:    ... okay on input line 157.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 157.
+LaTeX Font Info:    ... okay on input line 157.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 157.
+LaTeX Font Info:    ... okay on input line 157.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 157.
+LaTeX Font Info:    ... okay on input line 157.
 Package lastpage Info: Please have a look at the pageslts package at
 (lastpage)             https://www.ctan.org/pkg/pageslts
-(lastpage)             ! on input line 155.
-\c@lstlisting=\count108
-LaTeX Font Info:    Try loading font information for U+msa on input line 157.
+(lastpage)             ! on input line 157.
+\c@lstlisting=\count117
+LaTeX Font Info:    Try loading font information for U+msa on input line 159.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 157.
+LaTeX Font Info:    Try loading font information for U+msb on input line 159.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) [1
 
 ] [2]
-[3] [4] (./exercises01.R
+[3]
+Overfull \hbox (61.36023pt too wide) in paragraph at lines 284--284
+[] 
+ []
+
+[4] (./exercises01.R
 LaTeX Font Info:    Try loading font information for T1+pcr on input line 1.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/psnfss/t1pcr.fd
@@ -226,12 +269,12 @@ File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
 AED: lastpage setting LastPage
 [6] (./exercises01.aux) ) 
 Here is how much of TeX's memory you used:
- 4048 strings out of 493706
- 52561 string characters out of 6145769
- 173510 words of memory out of 5000000
- 7353 multiletter control sequences out of 15000+600000
+ 4647 strings out of 493706
+ 61164 string characters out of 6145769
+ 186289 words of memory out of 5000000
+ 7934 multiletter control sequences out of 15000+600000
  13344 words of font info for 51 fonts, out of 8000000 for 9000
  1328 hyphenation exceptions out of 8191
- 27i,12n,43p,288b,2309s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 28i,12n,43p,547b,2309s stack positions out of 5000i,500n,10000p,200000b,80000s
 
 Output written on exercises01.pdf (6 pages).

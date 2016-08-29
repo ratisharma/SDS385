@@ -14,6 +14,8 @@
 \usepackage{enumerate} % Required for enumerating with letters
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
 
 \DeclareMathOperator*{\argmin}{arg\,min}
 
@@ -219,34 +221,29 @@
 		\begin{align}
 			\hat{\beta} = (X^TWX)^{-1}X^TWy.
 		\end{align} 
-		However, this method is computationally expensive. Therefore I propose two alternative methods to solving this matrix equation using matrix decomposition, the LU decomposition and the Cholesky decomposition.
-		\begin{enumerate}[(i)]
-			\item 
-			\textbf{LU Decomposition} \\
+		However, this method is computationally expensive. Therefore I propose an alternative methods to solving this matrix equation using the Cholesky decomposition.
+			\textbf{Cholesky Decomposition} \\
 			Let 
 			\begin{align}
-				D = X^TWX, \;\;C=X^TWy
+				C = X^TWX, \;\;D=X^TWy
 			\end{align}
 			so 
 			\begin{align}
 				C\hat{\beta} = D.
 			\end{align}
-			We decompose matrix $C$ into a product of a lower-triangular matrix and an upper-triangular matrix, so that
+			We decompose matrix $C$ into a product of a lower-triangular matrix and an upper-triangular matrix, such that $U=L^T$ so
 			\begin{align}
-				C &= LU \therefore \\
-				LU\hat{\beta} &= D.
+				C &= LU = LL^T \therefore \\
+				LL^T\hat{\beta} &= D.
 			\end{align}
-			Furthermore we define matrix $A = U\hat{\beta}$. Thus we are left with two matrix equations to solve. 
+			Furthermore we define matrix $A = L^T\hat{\beta}$. Thus we are left with two matrix equations to solve. 
 			\begin{align}
 				LA &= D \\
-				U\hat{\beta} &= A
+				L^T\hat{\beta} &= A
 			\end{align}
-			This method will be much less computationally intensive than the inversion method because of the fact that the two left-matrices $L$ and $U$ are triangular. 
-		\item 
-		\textbf{Cholesky Decomposition} \\
-		We use a similar method as the LU decomposition, but this time we decompose matrix $C$ into the form the matrix product $LL^T$. So our method is exactly the same as above, except now $U = L^T$. However, we gain a computational advantage from symmetric exploitation.
-		\end{enumerate}
+			This method will be much less computationally intensive than the inversion method because of the fact that the two left-matrices $L$ and $U=L^T$ are triangular. We still must invert $L$ and $L^T$ but this is simpler than taking an inverse of a more complicated matrix $X^TWX$. This is similar to an LU decomposition, with the exception that we necessarily have two triangular matrices that are transposes of one another. Therefore, this method gains a computational advantage over LU decomposition from symmetric exploitation.
 	\item %c
+	Code for implementing this method is shown in the appendix to this paper.
 	\item %d
 \end{enumerate}
 \end{homeworkProblem}
@@ -257,6 +254,9 @@
 %%	PROBLEM 2
 %%----------------------------------------------------------------------------------------
 
+% \frac{1}{1+\exp(-x_i^T\beta)}
+% \frac{\exp(-x_i^T\beta)}{1+\exp(-x_i^T\beta)}
+
 \pagebreak
 
 \begin{homeworkProblem}
@@ -265,16 +265,31 @@
 %%
 %%
 \item % A
+	We have $y_i \sim \text{Binomial}(m_i, w_i)$, where 
+	\begin{align}
+		w_i = \frac{1}{1+\exp(-x_i^T\beta)}, \;\; 1-w_i = \frac{\exp(-x_i^T\beta)}{1+\exp(-x_i^T\beta)},
+	\end{align}
+	so the negative log likelihood is
 	\begin{align}
 		\ell(\beta) &= -\log \left \{ \prod_{i=1}^N p(y_i | \beta)  \right \} \\
-		&= -\log \left \{ \prod_{i=1}^N (w_i)^{y_i}(1-w_i)^{1-y_i}  \right \} \\
-		&= -\log \left \{ \prod_{i=1}^N \left (\frac{1}{1+\exp(-x_i^T\beta)} \right )^{y_i} \left (1-\frac{1}{1+\exp(-x_i^T\beta)} \right )^{1-y_i}  \right \} \\
-		&= -\log \left \{ \prod_{i=1}^N \left (\frac{1}{1+\exp(-x_i^T\beta)} \right )^{y_i} \left (\frac{\exp(-x_i^T\beta)}{1+\exp(-x_i^T\beta)} \right )^{1-y_i}  \right \} \\
-		&= - \left \{ \sum_{i=1}^N \left [ (y_i)(-\log(1+\exp(-x_i^T\beta)))  + (1-y_i)(-x_i^T\beta-\log(1+\exp(-x_i^T\beta)))\right ] \right \} \\
-		&= -\left \{ \sum_{i=1}^N [-x_i^T\beta - \log(1+\exp(-x_i^T))+y_ix_i^T\beta] \right \} \\
-		&= \sum_{i=1}^{N} (x_i^T\beta + \log(1+\exp(-x_i^T\beta))-y_ix_i^T\beta)
-		% -\log \left \{ \prod_{i=1}^N   \right \}
+		&= -\log \left \{ \prod_{i=1}^N \binom {m_i}{y_i}(w_i)^{y_i}(1-w_i)^{m_i-y_i}  \right \} \\
+		&= - \left \{ \sum_{i=1}^{N} \left ( \log\binom {m_i}{y_i} + y_i \log(w_i) + (m_i-y_i)\log(1-w_i) \right ) \right \} \\
+		&= - \left \{ \sum_{i=1}^{N} \left ( \log\binom {m_i}{y_i} + y_i \log\left ( \frac{1}{1+\exp(-x_i^T\beta)} \right ) + (m_i-y_i)\log\left ( \frac{\exp(-x_i^T\beta)}{1+\exp(-x_i^T\beta)} \right) \right ) \right \} \\
+		& = - \left \{ \sum_{i=1}^{N} \left ( \log\binom {m_i}{y_i} - y_i\log(1+\exp(-x_i^T\beta)) - (m_i-y_i)x_i^T\beta -m_i\log(1+\exp(-x_i^T\beta)) + y_i\log(1+\exp(-x_i^T\beta)) \right ) \right \} \\
+		& = - \left \{ \sum_{i=1}^{N} \left ( \log\binom {m_i}{y_i} - (m_i-y_i)x_i^T\beta -m_i\log(1+\exp(-x_i^T\beta)) \right ) \right \} \\
+		& = \sum_{i=1}^{N} \left ((m_i-y_i)x_i^T\beta +m_i\log(1+\exp(-x_i^T\beta)) - \log\binom {m_i}{y_i} \right ) \\
+		%%%
+		%%%
+		%%%
 	\end{align}
+	The gradient for this expression is, 
+	\begin{align}
+		\frac{\nabla \ell (\beta)}{d\beta} &= \sum_{i=1}^N \left ( (m_i-y_i)x_i - m_i \frac{1}{1+\exp(-x_i^T\beta)}\exp({-x_i^T\beta})x_i \right ) \\
+		&= \sum_{i=1}^N \left ( (m_i-y_i)x_i - m_i w_i\exp({-x_i^T\beta})x_i \right ) \\
+		&= \sum_{i=1}^N  (m_i-y_i-m_i w_i\exp(-x_i^T\beta))x_i  \\
+		&= \sum_{i=1}^N (m_iw_i-y_i)x_i
+	\end{align}
+	Text here. 
 %%
 %%
 %%
