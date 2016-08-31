@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015) (preloaded format=xelatex 2015.5.24)  29 AUG 2016 08:20
+This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015) (preloaded format=xelatex 2015.5.24)  31 AUG 2016 08:18
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -212,6 +212,121 @@ Document Style algorithmicx 1.2 - a greatly improved `algorithmic' style
 \ALG@tmplength=\skip57
 )
 Document Style - pseudocode environments for use with the `algorithmicx' style
+) (/usr/local/texlive/2015/texmf-dist/tex/latex/easy/easytable.sty
+Document Style `easytable' v1.0 <2001/06/13>.
+(/usr/local/texlive/2015/texmf-dist/tex/latex/easy/easy.sty
+Document Style `easy' v1.1 <2001/05/31>.
+Package: easy 2001/05/31 v1.1
+\@easy@level=\count116
+\@easy@ncol=\count117
+\@easy@nrow=\count118
+\@easy@cnt=\count119
+\@easy@boxviii=\box32
+\@easy@minxviii=\dimen118
+\@easy@minyviii=\dimen119
+\@easy@maxxviii=\dimen120
+\@easy@maxyviii=\dimen121
+\@easy@boxvii=\box33
+\@easy@minxvii=\dimen122
+\@easy@minyvii=\dimen123
+\@easy@maxxvii=\dimen124
+\@easy@maxyvii=\dimen125
+\@easy@boxvi=\box34
+\@easy@minxvi=\dimen126
+\@easy@minyvi=\dimen127
+\@easy@maxxvi=\dimen128
+\@easy@maxyvi=\dimen129
+\@easy@boxv=\box35
+\@easy@minxv=\dimen130
+\@easy@minyv=\dimen131
+\@easy@maxxv=\dimen132
+\@easy@maxyv=\dimen133
+\@easy@boxiv=\box36
+\@easy@minxiv=\dimen134
+\@easy@minyiv=\dimen135
+\@easy@maxxiv=\dimen136
+\@easy@maxyiv=\dimen137
+\@easy@boxiii=\box37
+\@easy@minxiii=\dimen138
+\@easy@minyiii=\dimen139
+\@easy@maxxiii=\dimen140
+\@easy@maxyiii=\dimen141
+\@easy@boxii=\box38
+\@easy@minxii=\dimen142
+\@easy@minyii=\dimen143
+\@easy@maxxii=\dimen144
+\@easy@maxyii=\dimen145
+\@easy@boxi=\box39
+\@easy@minxi=\dimen146
+\@easy@minyi=\dimen147
+\@easy@maxxi=\dimen148
+\@easy@maxyi=\dimen149
+\@easy@hsizexxx=\dimen150
+\@easy@vsizexxx=\dimen151
+\@easy@hsizexxix=\dimen152
+\@easy@vsizexxix=\dimen153
+\@easy@hsizexxviii=\dimen154
+\@easy@vsizexxviii=\dimen155
+\@easy@hsizexxvii=\dimen156
+\@easy@vsizexxvii=\dimen157
+\@easy@hsizexxvi=\dimen158
+\@easy@vsizexxvi=\dimen159
+\@easy@hsizexxv=\dimen160
+\@easy@vsizexxv=\dimen161
+\@easy@hsizexxiv=\dimen162
+\@easy@vsizexxiv=\dimen163
+\@easy@hsizexxiii=\dimen164
+\@easy@vsizexxiii=\dimen165
+\@easy@hsizexxii=\dimen166
+\@easy@vsizexxii=\dimen167
+\@easy@hsizexxi=\dimen168
+\@easy@vsizexxi=\dimen169
+\@easy@hsizexx=\dimen170
+\@easy@vsizexx=\dimen171
+\@easy@hsizexix=\dimen172
+\@easy@vsizexix=\dimen173
+\@easy@hsizexviii=\dimen174
+\@easy@vsizexviii=\dimen175
+\@easy@hsizexvii=\dimen176
+\@easy@vsizexvii=\dimen177
+\@easy@hsizexvi=\dimen178
+\@easy@vsizexvi=\dimen179
+\@easy@hsizexv=\dimen180
+\@easy@vsizexv=\dimen181
+\@easy@hsizexiv=\dimen182
+\@easy@vsizexiv=\dimen183
+\@easy@hsizexiii=\dimen184
+\@easy@vsizexiii=\dimen185
+\@easy@hsizexii=\dimen186
+\@easy@vsizexii=\dimen187
+\@easy@hsizexi=\dimen188
+\@easy@vsizexi=\dimen189
+\@easy@hsizex=\dimen190
+\@easy@vsizex=\dimen191
+\@easy@hsizeix=\dimen192
+\@easy@vsizeix=\dimen193
+\@easy@hsizeviii=\dimen194
+\@easy@vsizeviii=\dimen195
+\@easy@hsizevii=\dimen196
+\@easy@vsizevii=\dimen197
+\@easy@hsizevi=\dimen198
+\@easy@vsizevi=\dimen199
+\@easy@hsizev=\dimen200
+\@easy@vsizev=\dimen201
+\@easy@hsizeiv=\dimen202
+\@easy@vsizeiv=\dimen203
+\@easy@hsizeiii=\dimen204
+\@easy@vsizeiii=\dimen205
+\@easy@hsizeii=\dimen206
+\@easy@vsizeii=\dimen207
+\@easy@hsizei=\dimen208
+\@easy@vsizei=\dimen209
+\@easy@dash@len=\dimen210
+\@easy@dash@sep=\dimen211
+)
+Package: easytable 2001/05/31v1.1
+\@tab@size@rule=\dimen212
+\@tab@size@dash=\dimen213
 ) (/usr/local/texlive/2015/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2014/09/06 1.5e listings language file
 )
@@ -221,33 +336,33 @@ File: lstlang2.sty 2014/09/06 1.5e listings language file
 (/usr/local/texlive/2015/texmf-dist/tex/latex/listings/lstlang3.sty
 File: lstlang3.sty 2014/09/06 1.5e listings language file
 )
-\c@homeworkProblemCounter=\count116
+\c@homeworkProblemCounter=\count120
 
 (./exercises01.aux)
 \openout1 = `exercises01.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 157.
-LaTeX Font Info:    ... okay on input line 157.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 157.
-LaTeX Font Info:    ... okay on input line 157.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 157.
-LaTeX Font Info:    ... okay on input line 157.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 157.
-LaTeX Font Info:    ... okay on input line 157.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 157.
-LaTeX Font Info:    ... okay on input line 157.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 157.
-LaTeX Font Info:    ... okay on input line 157.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 163.
+LaTeX Font Info:    ... okay on input line 163.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 163.
+LaTeX Font Info:    ... okay on input line 163.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 163.
+LaTeX Font Info:    ... okay on input line 163.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 163.
+LaTeX Font Info:    ... okay on input line 163.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 163.
+LaTeX Font Info:    ... okay on input line 163.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 163.
+LaTeX Font Info:    ... okay on input line 163.
 Package lastpage Info: Please have a look at the pageslts package at
 (lastpage)             https://www.ctan.org/pkg/pageslts
-(lastpage)             ! on input line 157.
-\c@lstlisting=\count117
-LaTeX Font Info:    Try loading font information for U+msa on input line 159.
+(lastpage)             ! on input line 163.
+\c@lstlisting=\count121
+LaTeX Font Info:    Try loading font information for U+msa on input line 165.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 159.
+LaTeX Font Info:    Try loading font information for U+msb on input line 165.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
@@ -255,26 +370,37 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 
 ] [2]
 [3]
-Overfull \hbox (61.36023pt too wide) in paragraph at lines 284--284
+Overfull \hbox (61.36023pt too wide) in paragraph at lines 290--290
 [] 
  []
 
-[4] (./exercises01.R
+File: beta_trace1.png Graphic file (type QTm)
+<use  "beta_trace1.png" >
+
+LaTeX Warning: No positions in optional float specifier.
+               Default added (so using `tbp') on input line 314.
+
+[4] [5]
+Underfull \hbox (badness 10000) in paragraph at lines 361--369
+
+ []
+
+[6] (./exercises01.R
 LaTeX Font Info:    Try loading font information for T1+pcr on input line 1.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/psnfss/t1pcr.fd
 File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
-) [5])
-
+) [7]) [8]
+(./exercises01pt2.R [9] [10]) 
 AED: lastpage setting LastPage
-[6] (./exercises01.aux) ) 
+[11] (./exercises01.aux) ) 
 Here is how much of TeX's memory you used:
- 4647 strings out of 493706
- 61164 string characters out of 6145769
- 186289 words of memory out of 5000000
- 7934 multiletter control sequences out of 15000+600000
- 13344 words of font info for 51 fonts, out of 8000000 for 9000
+ 4909 strings out of 493706
+ 64655 string characters out of 6145769
+ 208081 words of memory out of 5000000
+ 8179 multiletter control sequences out of 15000+600000
+ 14758 words of font info for 57 fonts, out of 8000000 for 9000
  1328 hyphenation exceptions out of 8191
- 28i,12n,43p,547b,2309s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 30i,12n,43p,547b,2309s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on exercises01.pdf (6 pages).
+Output written on exercises01.pdf (11 pages).

@@ -16,8 +16,10 @@
 \usepackage{amssymb}
 \usepackage{algorithm}
 \usepackage[noend]{algpseudocode}
+\usepackage[thinlines]{easytable}
 
 \DeclareMathOperator*{\argmin}{arg\,min}
+
 
 % Margins
 \topmargin=-0.45in
@@ -125,6 +127,10 @@
 }{
 \enterProblemHeader{\homeworkProblemName} % Header and footer after the environment
 }
+
+
+
+
 
 %----------------------------------------------------------------------------------------
 %	NAME AND CLASS SECTION
@@ -284,36 +290,124 @@
 	\end{align}
 	The gradient for this expression is, 
 	\begin{align}
-		\frac{\nabla \ell (\beta)}{d\beta} &= \sum_{i=1}^N \left ( (m_i-y_i)x_i - m_i \frac{1}{1+\exp(-x_i^T\beta)}\exp({-x_i^T\beta})x_i \right ) \\
-		&= \sum_{i=1}^N \left ( (m_i-y_i)x_i - m_i w_i\exp({-x_i^T\beta})x_i \right ) \\
-		&= \sum_{i=1}^N  (m_i-y_i-m_i w_i\exp(-x_i^T\beta))x_i  \\
+		\nabla \ell (\beta) &= \sum_{i=1}^N \left ( (m_i-y_i)x_i - m_i \frac{\exp({-x_i^T\beta})}{1+\exp(-x_i^T\beta)}x_i \right ) \\
+		&= \sum_{i=1}^N \left ( (m_i-y_i)x_i - m_i (1-w_i)x_i \right ) \\
 		&= \sum_{i=1}^N (m_iw_i-y_i)x_i
 	\end{align}
-	Text here. 
+	
 %%
 %%
 %%
 %%
 %%
 \item % B
+	Code for implementing the gradient descent method is shown in the appendix. Note that we normalize the values in the $X$ matrix and add a column of 1's to make an intercept term. We start by having an initial arbitrary guess for $\beta$, which we define as $\beta_0$. Then we use an iterative process to converge upon the true value of $\beta$ based on the calculated gradient of the log likelihood at $\hat{\beta}_t$ and an arbitrary step size, $\alpha$ as follows
+	\begin{align}
+		\hat{\beta}_{t+1} = \hat{\beta}_t - \alpha \times \nabla\ell(\hat{\beta}_t)
+	\end{align}
+	We use an intial guess of $\beta_0 = 0$, a step size of $\alpha = 0.025$, and 50,000 iterations and reach convergence in optimizing the log likelihood, as shown in the trace plot below. Our final estimations of ${\beta}$ are reported below along with estimations from R's native \texttt{glm} function. The two sets of estimates are in close agreement with one another.
+		\begin{figure}[htp!]
+		\centering
+			\includegraphics[scale=0.5]{beta_trace1.png}
+		\end{figure}
+		% Table
+		\begin{table}[]
+		\centering
+		\label{my-label}
+		\begin{tabular}{l|r|r}
+		                        & Grad descent & R: \texttt{glm} \\ \hline
+								\\[-1em]
+		$\hat{\beta}_1$      & 0.48553           & 0.48702         \\  \hline
+		\\[-1em]
+		$\hat{\beta}_2$      & -7.14618          & -7.22185         \\ \hline
+		\\[-1em]
+		$\hat{\beta}_3$      & 1.65481           & 1.65476         \\ \hline
+		\\[-1em]
+		$\hat{\beta}_4$      & -1.80713          & -1.73763        \\ \hline
+		\\[-1em]
+		$\hat{\beta}_5$      & 13.99290          & 14.00485        \\ \hline
+		\\[-1em]
+		$\hat{\beta}_6$      & 1.07426           & 1.07495         \\ \hline
+		\\[-1em]
+		$\hat{\beta}_7$      & -0.07319          & -0.07723        \\ \hline
+		\\[-1em]
+		$\hat{\beta}_8$      & 0.67573           & 0.67512         \\ \hline
+		\\[-1em]
+		$\hat{\beta}_9$      & 2.59383           & 2.59287         \\ \hline
+		\\[-1em]
+		$\hat{\beta}_{10}$ & 0.44615           & 0.44626         \\ \hline
+		\\[-1em]
+		$\hat{\beta}_{11}$ & -0.48276          & -0.48248           
+		\end{tabular}
+		\caption{Comparison of results from gradient descent and \texttt{glm}}
+		\end{table}
 %%
 %%
 %%
 %%
 %%
 \item % C
+	We need to calculate the Hessian matrix of the log likelihood function, $\nabla^2(\ell(\beta))$. The Hessian will be a $P\times P$ matrix, with the element in row $i$ and column $j$ being\footnote{Notice the reindexing shown below for summations.} 
+	\begin{align}
+		\frac{\partial^2}{\partial \beta_i \partial \beta _j}\ell (\beta) &= \frac{\partial}{\partial \beta_i} \left ( \frac{\partial}{\partial \beta_j} \ell (\beta) \right ) \\
+		&= \frac{\partial}{\partial \beta_i} \left ( \frac{\partial}{\partial \beta_j} \sum_{k=1}^N(\ldots) \right ) \\
+		&= \frac{\partial}{\partial \beta_i} \left ( \sum_{k=1}^N(m_kw_k-y_k)x_{kj} \right )  \\
+		&= \sum_{k=1}^{N} x_{ki}x_{kj}m_k w_k(1-w_k)
+	\end{align}
+	Note: 
+	\begin{align}
+		\frac{\partial}{\partial \beta_i} w_k &= x_{ki} \frac{\exp(-x_k^T\beta)}{(1+\exp(-x_k^T\beta))^2} \\
+		&= x_{ki} w_k(1-w_k)
+	\end{align}
+	This matrix is equivalent to $X^TWX$ where $W = \text{diag}(m_1w_1(1-w_1),\ldots, m_Nw_N(1-w_N))$ \\
 %%
 %%
 %%
 %%
 %%
 \item % D
+Now we use Newton's to estimate $\beta$. This is also an iterative process, though now we need far fewer iterations to achieve convergence because we are taking the curvature of our objective function ($\ell(\beta)$) into account. In fact, we only use 10 iterations and achieve estimates $\hat{\beta}$ which are \emph{exactly} in line with estimates from \texttt{glm}. \\
+\textbf{Newton's Method:} 
+\begin{align}
+	\hat{\beta}_{t+1} = \hat{\beta}_t - (\nabla^2\ell(\hat{\beta}_t))^{-1}\nabla\ell(\hat{\beta_t})
+\end{align}
+\begin{table}[htp!]
+		\centering
+		\label{my-label2}
+		\begin{tabular}{l|r|r}
+		                        & N.'s method & R: \texttt{glm} \\ \hline
+								\\[-1em]
+		$\hat{\beta}_1$      & 0.48702           & 0.48702         \\  \hline
+		\\[-1em]
+		$\hat{\beta}_2$      & -7.22185          & -7.22185         \\ \hline
+		\\[-1em]
+		$\hat{\beta}_3$      & 1.65476          & 1.65476         \\ \hline
+		\\[-1em]
+		$\hat{\beta}_4$      & -1.73763           & -1.73763        \\ \hline
+		\\[-1em]
+		$\hat{\beta}_5$      & 14.00485        & 14.00485        \\ \hline
+		\\[-1em]
+		$\hat{\beta}_6$      & 1.07495             & 1.07495         \\ \hline
+		\\[-1em]
+		$\hat{\beta}_7$      & -0.07723          & -0.07723        \\ \hline
+		\\[-1em]
+		$\hat{\beta}_8$      & 0.67512            & 0.67512         \\ \hline
+		\\[-1em]
+		$\hat{\beta}_9$      & 2.59287         & 2.59287         \\ \hline
+		\\[-1em]
+		$\hat{\beta}_{10}$ & 0.44626          & 0.44626         \\ \hline
+		\\[-1em]
+		$\hat{\beta}_{11}$ & -0.48248           & -0.48248           
+		\end{tabular}
+		\caption{Comparison of results from Newton's method and \texttt{glm}}
+	\end{table}
 %%
 %%
 %%
 %%
 %%
 \item % E
+Gradient descent: many iterations; Newton's method: must invert a matrix
 %%
 %%
 %%
@@ -321,7 +415,6 @@
 %%
 \end{enumerate}
 \end{homeworkProblem}
-
 
 
 
@@ -334,6 +427,8 @@
 % \rscript{homework03.r}{Sample Perl Script With Highlighting}
 \lstinputlisting[language=R]{exercises01.R}
 
+\pagebreak
+\lstinputlisting[language=R]{exercises01pt2.R}
 %----------------------------------------------------------------------------------------
 
 \end{document}
