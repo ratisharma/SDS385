@@ -251,6 +251,7 @@
 	\item %c
 	Code for implementing this method is shown in the appendix to this paper.
 	\item %d
+	The Matrix package within R is suited to handle sparse matrices with the \texttt{sparse} argument within the \texttt{Matrix} command. 
 \end{enumerate}
 \end{homeworkProblem}
 
@@ -292,9 +293,10 @@
 	\begin{align}
 		\nabla \ell (\beta) &= \sum_{i=1}^N \left ( (m_i-y_i)x_i - m_i \frac{\exp({-x_i^T\beta})}{1+\exp(-x_i^T\beta)}x_i \right ) \\
 		&= \sum_{i=1}^N \left ( (m_i-y_i)x_i - m_i (1-w_i)x_i \right ) \\
-		&= \sum_{i=1}^N (m_iw_i-y_i)x_i
+		&= \sum_{i=1}^N (m_iw_i-y_i)x_i \\
+		&= -X^T(y-mw)
 	\end{align}
-	
+	where $y$ is the $n \times 1$ vector of responses and $mw$ is the element-wise product of the two $n \times 1$ vectors $m$ and $w$.
 %%
 %%
 %%
@@ -407,7 +409,7 @@ Now we use Newton's to estimate $\beta$. This is also an iterative process, thou
 %%
 %%
 \item % E
-Gradient descent: many iterations; Newton's method: must invert a matrix
+Gradient descent requires many iterations while Newton's method must invert a matrix, which may either be improssible and is computationally intensive for large matrices.
 %%
 %%
 %%

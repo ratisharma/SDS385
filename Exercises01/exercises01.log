@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015) (preloaded format=xelatex 2015.5.24)  31 AUG 2016 08:18
+This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015) (preloaded format=xelatex 2015.5.24)  31 AUG 2016 08:37
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -370,7 +370,7 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 
 ] [2]
 [3]
-Overfull \hbox (61.36023pt too wide) in paragraph at lines 290--290
+Overfull \hbox (61.36023pt too wide) in paragraph at lines 291--291
 [] 
  []
 
@@ -378,10 +378,10 @@ File: beta_trace1.png Graphic file (type QTm)
 <use  "beta_trace1.png" >
 
 LaTeX Warning: No positions in optional float specifier.
-               Default added (so using `tbp') on input line 314.
+               Default added (so using `tbp') on input line 316.
 
 [4] [5]
-Underfull \hbox (badness 10000) in paragraph at lines 361--369
+Underfull \hbox (badness 10000) in paragraph at lines 363--371
 
  []
 
@@ -391,16 +391,16 @@ LaTeX Font Info:    Try loading font information for T1+pcr on input line 1.
 (/usr/local/texlive/2015/texmf-dist/tex/latex/psnfss/t1pcr.fd
 File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
 ) [7]) [8]
-(./exercises01pt2.R [9] [10]) 
+(./exercises01pt2.R [9]) 
 AED: lastpage setting LastPage
-[11] (./exercises01.aux) ) 
+[10] (./exercises01.aux) ) 
 Here is how much of TeX's memory you used:
- 4909 strings out of 493706
- 64655 string characters out of 6145769
- 208081 words of memory out of 5000000
- 8179 multiletter control sequences out of 15000+600000
- 14758 words of font info for 57 fonts, out of 8000000 for 9000
+ 4901 strings out of 493706
+ 64576 string characters out of 6145769
+ 191071 words of memory out of 5000000
+ 8174 multiletter control sequences out of 15000+600000
+ 13512 words of font info for 52 fonts, out of 8000000 for 9000
  1328 hyphenation exceptions out of 8191
- 30i,12n,43p,547b,2309s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 28i,12n,43p,547b,2309s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on exercises01.pdf (11 pages).
+Output written on exercises01.pdf (10 pages).
