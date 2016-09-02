@@ -247,11 +247,28 @@
 				LA &= D \\
 				L^T\hat{\beta} &= A
 			\end{align}
-			This method will be much less computationally intensive than the inversion method because of the fact that the two left-matrices $L$ and $U=L^T$ are triangular. We still must invert $L$ and $L^T$ but this is simpler than taking an inverse of a more complicated matrix $X^TWX$. This is similar to an LU decomposition, with the exception that we necessarily have two triangular matrices that are transposes of one another. Therefore, this method gains a computational advantage over LU decomposition from symmetric exploitation.
+			This method will be much less computationally intensive than the inversion method because R can leverage the fact that the two left-matrices $L$ and $U=L^T$ are triangular. We still must invert $L$ and $L^T$ but this is simpler than taking an inverse of a more complicated matrix $X^TWX$. This is similar to an LU decomposition, with the exception that we necessarily have two triangular matrices that are transposes of one another. Therefore, this method gains a computational advantage over LU decomposition from symmetric exploitation.
 	\item %c
-	Code for implementing this method is shown in the appendix to this paper.
+	Code for implementing this method is shown in the appendix to this paper. Below are results from benchmarking these two methods, the inversion method and the method of Cholesky decomposition. The Cholesky method consistently outperforms the inversion method in computing efficiency; however, its edge over the inversion method drops off with increasing $N$ keeping $P$ constant, while its edge improves with increasing $P$ keeping $N$ constant.
+	\begin{figure}[htp!]
+		\centering
+		\includegraphics[scale = 0.4]{screenshot1.png}
+		\includegraphics[scale = 0.4]{screenshot4.png} \\ 
+		\includegraphics[scale = 0.4]{screenshot2.png}
+		\includegraphics[scale = 0.4]{screenshot3.png}
+		\caption{Benchmarking the inversion and Cholesky method for different $N$ and $P$}
+	\end{figure}
 	\item %d
-	The Matrix package within R is suited to handle sparse matrices with the \texttt{sparse} argument within the \texttt{Matrix} command. 
+	The \texttt{Matrix} package in R is suited to handle sparse matrices. We do this by redefining $X$ as \texttt{X <- Matrix(X, sparse = TRUE)}. By doing this, R streamlines its handling of the $X$ matrix and subsequent matrix products incorporating $X$ by storing $X$ as a coordinate list of non-zero entries as opposed to a matrix with many zeros within it. For the sparse method, we again use the Cholesky decomposition after converting $X$ to a sparse matrix. In the benchmarks below, we see the computational advantage gained by handling $X$ in this fashion. Here, $\alpha$ represents the density of $X$, i.e., the proportion of entries which are non-zero. The increase in efficiency is more noticeable with higher sparsity, although even for $\alpha = 0.25$ the effect is still quite dramatic. 
+	\begin{figure}[htp!]
+		\includegraphics[scale=0.4]{ss11.png}
+		\includegraphics[scale=0.4]{ss12.png} \\ \\
+		\includegraphics[scale=0.4]{ss21.png}
+		\includegraphics[scale=0.4]{ss22.png} \\ \\
+		\includegraphics[scale=0.4]{ss31.png}
+		\includegraphics[scale=0.4]{ss32.png}
+		\caption{Benchmarking for various values of $N$, $P$, and density level $\alpha$}
+	\end{figure}
 \end{enumerate}
 \end{homeworkProblem}
 
@@ -277,6 +294,13 @@
 		w_i = \frac{1}{1+\exp(-x_i^T\beta)}, \;\; 1-w_i = \frac{\exp(-x_i^T\beta)}{1+\exp(-x_i^T\beta)},
 	\end{align}
 	so the negative log likelihood is
+	%
+	%
+	%
+	% LOG LIK FN
+	%
+	%
+	%
 	\begin{align}
 		\ell(\beta) &= -\log \left \{ \prod_{i=1}^N p(y_i | \beta)  \right \} \\
 		&= -\log \left \{ \prod_{i=1}^N \binom {m_i}{y_i}(w_i)^{y_i}(1-w_i)^{m_i-y_i}  \right \} \\
@@ -290,6 +314,13 @@
 		%%%
 	\end{align}
 	The gradient for this expression is, 
+	%
+	%
+	%
+	% GRAD FN
+	%
+	%
+	%
 	\begin{align}
 		\nabla \ell (\beta) &= \sum_{i=1}^N \left ( (m_i-y_i)x_i - m_i \frac{\exp({-x_i^T\beta})}{1+\exp(-x_i^T\beta)}x_i \right ) \\
 		&= \sum_{i=1}^N \left ( (m_i-y_i)x_i - m_i (1-w_i)x_i \right ) \\
@@ -308,12 +339,19 @@
 		\hat{\beta}_{t+1} = \hat{\beta}_t - \alpha \times \nabla\ell(\hat{\beta}_t)
 	\end{align}
 	We use an intial guess of $\beta_0 = 0$, a step size of $\alpha = 0.025$, and 50,000 iterations and reach convergence in optimizing the log likelihood, as shown in the trace plot below. Our final estimations of ${\beta}$ are reported below along with estimations from R's native \texttt{glm} function. The two sets of estimates are in close agreement with one another.
+	%
+	%
+	%
+	% TRACE PLOT FOR beta, table of estimations
+	%
+	%
+	%
 		\begin{figure}[htp!]
 		\centering
-			\includegraphics[scale=0.5]{beta_trace1.png}
+%			\includegraphics[scale=0.5]{beta_trace1.png}
 		\end{figure}
 		% Table
-		\begin{table}[]
+		\begin{table}
 		\centering
 		\label{my-label}
 		\begin{tabular}{l|r|r}
@@ -349,7 +387,7 @@
 %%
 %%
 \item % C
-	We need to calculate the Hessian matrix of the log likelihood function, $\nabla^2(\ell(\beta))$. The Hessian will be a $P\times P$ matrix, with the element in row $i$ and column $j$ being\footnote{Notice the reindexing shown below for summations.} 
+	We need to calculate the Hessian matrix of the log likelihood function, $\nabla^2 \ell(\beta) $. The Hessian will be a $P\times P$ matrix, with the element in row $i$ and column $j$ being\footnote{Notice the reindexing shown below for summations.} 
 	\begin{align}
 		\frac{\partial^2}{\partial \beta_i \partial \beta _j}\ell (\beta) &= \frac{\partial}{\partial \beta_i} \left ( \frac{\partial}{\partial \beta_j} \ell (\beta) \right ) \\
 		&= \frac{\partial}{\partial \beta_i} \left ( \frac{\partial}{\partial \beta_j} \sum_{k=1}^N(\ldots) \right ) \\
@@ -362,6 +400,26 @@
 		&= x_{ki} w_k(1-w_k)
 	\end{align}
 	This matrix is equivalent to $X^TWX$ where $W = \text{diag}(m_1w_1(1-w_1),\ldots, m_Nw_N(1-w_N))$ \\
+	
+	Let $a = (y-mw)$. We have already shown that $\nabla \ell(\beta) = -X^T (y-mw) = -X^T a$ and $\nabla^2 \ell (\beta) = X^T W X$. The second-order Taylor approximation for $\ell(\beta)$ around the point $\beta_0$ is,\footnote{Help with completing the square obtained from: \texttt{https://justindomke.wordpress.com/completing-the-square-in-n-dimensions/}}
+	%
+	%
+	%
+	% Taylor approx
+	%
+	%
+	%
+	\begin{align}
+		\hat{\ell}(\beta) &= \ell(\beta_0)+(\nabla \ell(\beta))^T(\beta-\beta_0) + \frac{1}{2}(\beta-\beta_0)^T \nabla^2 \ell(\beta) (\beta-\beta_0) \\
+		&= \ell(\beta_0) + (-X^T a)^T(\beta - \beta_0) + \frac{1}{2}(\beta - \beta_0)^T X^T W X (\beta - \beta_0) \\
+		&= \frac{1}{2} ( [ \beta - \beta_0 ] -(X^T W X)^{-1} X^T a )^T X^T W X ( [ \beta - \beta_0 ] -(X^T W X)^{-1} X^T a ) + c \\ 
+		&= \frac{1}{2} (\beta - \beta_0  + X^{-1}W^{-1}(X^T)^{-1}X^T a )^T X^T W X (\beta - \beta_0 + X^{-1}W^{-1}(X^T)^{-1}X^T a ) + c \\
+		&= \frac{1}{2} (\beta - \beta_0 + X^{-1}W^{-1} a )^T X^T W X (\beta - \beta_0 X^{-1}W^{-1} a ) + c \\
+		&= \frac{1}{2} (X\beta - X\beta_0 + XX^{-1}W^{-1} a )^T W (X\beta - X\beta_0 + X X^{-1}W^{-1} a ) + c \\
+		&= \frac{1}{2} (X\beta - X\beta_0 + W^{-1} a )^T W (X\beta - X\beta_0 + W^{-1} a ) + \ldots \\
+		&= \frac{1}{2}(z-X\beta)^T W (z-X\beta) + c,
+	\end{align}
+	where $c$ is some constant, $z = X\beta_0 + W^{-1}a = X\beta_0 + W^{-1}(y-mw)$
 %%
 %%
 %%
@@ -373,7 +431,7 @@ Now we use Newton's to estimate $\beta$. This is also an iterative process, thou
 \begin{align}
 	\hat{\beta}_{t+1} = \hat{\beta}_t - (\nabla^2\ell(\hat{\beta}_t))^{-1}\nabla\ell(\hat{\beta_t})
 \end{align}
-\begin{table}[htp!]
+\begin{figure}[htp!]
 		\centering
 		\label{my-label2}
 		\begin{tabular}{l|r|r}
@@ -402,7 +460,7 @@ Now we use Newton's to estimate $\beta$. This is also an iterative process, thou
 		$\hat{\beta}_{11}$ & -0.48248           & -0.48248           
 		\end{tabular}
 		\caption{Comparison of results from Newton's method and \texttt{glm}}
-	\end{table}
+	\end{figure}
 %%
 %%
 %%
