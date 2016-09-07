@@ -334,7 +334,7 @@
 %%
 %%
 \item % B
-	Code for implementing the gradient descent method is shown in the appendix. Note that we normalize the values in the $X$ matrix and add a column of 1's to make an intercept term. We start by having an initial arbitrary guess for $\beta$, which we define as $\beta_0$. Then we use an iterative process to converge upon the true value of $\beta$ based on the calculated gradient of the log likelihood at $\hat{\beta}_t$ and an arbitrary step size, $\alpha$ as follows
+	Code for implementing the gradient descent method is shown in the appendix. Note that we normalize the values in the $X$ matrix and add a column of 1's to make an intercept term. We start by having an initial arbitrary guess for $\beta$, which we define as $\beta_0$. Then we use an iterative process to converge upon the true value of $\beta$ based on the calculated gradient of the log likelihood at $\hat{\beta}_t$ and an arbitrary step size, $\alpha$, as follows:
 	\begin{align}
 		\hat{\beta}_{t+1} = \hat{\beta}_t - \alpha \times \nabla\ell(\hat{\beta}_t)
 	\end{align}
@@ -467,7 +467,7 @@ Now we use Newton's to estimate $\beta$. This is also an iterative process, thou
 %%
 %%
 \item % E
-Gradient descent requires many iterations while Newton's method must invert a matrix, which may either be improssible and is computationally intensive for large matrices.
+Gradient descent requires many iterations, and there is no simple way to know what step size is wise. In contrast, Newton's method converges upon the MLE with far fewer iterations. However, for Newton's method we must invert the Hessian matrix, is computationally intensive for large matrices and will be impossible if the Hessian is singular.
 %%
 %%
 %%
