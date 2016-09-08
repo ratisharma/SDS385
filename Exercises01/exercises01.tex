@@ -14,9 +14,10 @@
 \usepackage{enumerate} % Required for enumerating with letters
 \usepackage{amsmath}
 \usepackage{amssymb}
-\usepackage{algorithm}
+\usepackage{algorithm2e}
 \usepackage[noend]{algpseudocode}
 \usepackage[thinlines]{easytable}
+
 
 \DeclareMathOperator*{\argmin}{arg\,min}
 
@@ -137,7 +138,7 @@
 %----------------------------------------------------------------------------------------
 
 \newcommand{\hmwkTitle}{Exercises 1 - Preliminaries} % Assignment title
-\newcommand{\hmwkDueDate}{August\ 23,\ 2016} % Due date
+\newcommand{\hmwkDueDate}{September\ 8,\ 2016} % Due date
 \newcommand{\hmwkClass}{SDS\ 385} % Course/class
 \newcommand{\hmwkClassTime}{} % Class/lecture time
 \newcommand{\hmwkClassInstructor}{Professor James Scott} % Teacher/lecturer
@@ -178,16 +179,18 @@
 %%
 %%
 	\item %a
+	Rewriting the weighted least squares (WLS) objective function in terms of vectors and matrices, we get
 		\begin{align}
 			\hat{\beta} &= \argmin_{\beta \in \mathbb{R}^p} \sum_{i=1}^{N} \frac{w_i}{2} \left ( y_i - x_i^T\beta \right )^2 \\
-			&= \argmin_{\beta \in \mathbb{R}^p} \frac{1}{2} (Y-X \beta)^T W (Y-X\beta)
+			&= \argmin_{\beta \in \mathbb{R}^p} \frac{1}{2} (Y-X \beta)^T W (Y-X\beta).
 		\end{align}
+		Expanding the term in the objective function yielda
 		\begin{align}
 			\frac{1}{2} (Y-X \beta)^T W (Y-X\beta) &= \frac{1}{2} (Y^T - \beta^T X^T)W(Y-X\beta) \\
 			&= \frac{1}{2} (Y^TW - \beta^T X^TW)(Y-X\beta) \\
 			&= \frac{1}{2} (Y^TWY -\beta^TX^TWY-Y^TWX\beta + \beta^TX^TWX\beta) \\
 			&= \frac{1}{2} (Y^TWY - 2(X\beta)^TWY +\beta^TX^TWX\beta) \\
-			&= \frac{1}{2} Y^TWY - (X\beta)^TWY + \frac{1}{2} \beta^TX^TWX\beta, 
+			&= \frac{1}{2} Y^TWY - (X\beta)^TWY + \frac{1}{2} \beta^TX^TWX\beta, \label{eqn1}
 		\end{align}
 		because 
 		\begin{align}
@@ -198,27 +201,36 @@
 			Y^TWX\beta &= (Y^TWX\beta)^T \because Y^TWX\beta \in \mathbb{R}^1 \\
 			(Y^TWX\beta)^T &= (WX\beta)^TY = (X\beta)^TW^TY = (X\beta)^TWY.
 		\end{align}
-		We want to minimize the objective function from Eqn. (7), so we take the gradient with respect to $\beta$ and set it equal to zero. For each of the three terms, their are respective gradients with respect to $\beta$ are 
+		We want to minimize the objective function from Eqn. (\ref{eqn1}), so we take the gradient with respect to $\beta$ and set it equal to zero. For each of the three terms, their are respective gradients with respect to $\beta$ are 
 		\begin{enumerate}[(i)]
 			\item % i
 				\begin{align}
-					\frac{\partial}{\partial \beta} \frac{1}{2} Y^TWY = 0
+					\nabla_{\beta} \frac{1}{2} Y^TWY = 0
 				\end{align}
 			\item % ii
 				\begin{align}
-					\frac{\partial}{\partial \beta} -(X\beta)^TWY = - X^TWY
+					\nabla_{\beta} -(X\beta)^TWY = - X^TWY
 				\end{align}
 			\item % iii
 				\begin{align}
-					\frac{\partial}{\partial \beta} \frac{1}{2} \beta^TX^TWX\beta &= \frac{1}{2} \beta^T (X^TWX + (X^TWX)^T) \\
+					\nabla_{\beta} \frac{1}{2} \beta^TX^TWX\beta &= \frac{1}{2} \beta^T (X^TWX + (X^TWX)^T) \\
 					&= X^TWX\beta.
 				\end{align}
 		\end{enumerate}
-		Summing these terms and equaling them to zero yields
+		Summing these terms and setting them to zero yields
 		\begin{align}
 			X^TWX\beta - X^TWY &= 0 \therefore \\
-			 (X^TWX)\hat{\beta} &= X^TWY
+			 (X^TWX)\hat{\beta} &= X^TWY.
 		\end{align}
+%%
+%%
+%%
+%%
+%%
+%%
+%%
+%%
+%%
 %%
 %%
 %%
@@ -227,7 +239,7 @@
 		\begin{align}
 			\hat{\beta} = (X^TWX)^{-1}X^TWy.
 		\end{align} 
-		However, this method is computationally expensive. Therefore I propose an alternative methods to solving this matrix equation using the Cholesky decomposition.
+		However, this method is computationally expensive. Therefore I propose an alternative methods to solving this matrix equation using the Cholesky decomposition.\\
 			\textbf{Cholesky Decomposition} \\
 			Let 
 			\begin{align}
@@ -247,9 +259,38 @@
 				LA &= D \\
 				L^T\hat{\beta} &= A
 			\end{align}
-			This method will be much less computationally intensive than the inversion method because R can leverage the fact that the two left-matrices $L$ and $U=L^T$ are triangular. We still must invert $L$ and $L^T$ but this is simpler than taking an inverse of a more complicated matrix $X^TWX$. This is similar to an LU decomposition, with the exception that we necessarily have two triangular matrices that are transposes of one another. Therefore, this method gains a computational advantage over LU decomposition from symmetric exploitation.
+			This method will be much less computationally intensive than the inversion method because R can leverage the fact that the two left-matrices $L$ and $U=L^T$ are triangular. We still must solve matrices $L$ and $L^T$ but this is simpler than taking an inverse of a more complicated matrix $X^TWX$. This is similar to an LU decomposition, with the exception that we necessarily have two triangular matrices that are transposes of one another. Therefore, this method gains a computational advantage over LU decomposition from symmetric exploitation.
+			\begin{algorithm}[htp!]
+			 \KwResult{Perform Cholesky decomposition to solve for $\hat{\beta}$}
+			 Cholesky = function($X,y,W$) \{ \\
+			 \vspace{2mm}
+			 Compute $D = X^T W y$ \; 
+			 Compute $C = X^T W X$\; 
+			 \vspace{2mm}
+			 Compute $U$ as the upper triangular matrix from Cholesky decomposition of $C$\;
+			 Compute $L = U^T$\; 
+			 \vspace{2mm}
+			 Solve for $A$ in $LA=D$\;
+			 Solve for $\hat{\beta}$ in $L^T\hat{\beta}=U\hat{\beta}=A$\;
+			 \vspace{2mm}
+			 return$(\hat{\beta}$)\; 
+			 \}
+			 \caption{Pseudocode for implementing Cholesky decomposition method}
+			\end{algorithm}
+%%
+%%
+%%
+%%
+%%
+%%
+%%
+%%
+%%
+%%
+%%
+%%
 	\item %c
-	Code for implementing this method is shown in the appendix to this paper. Below are results from benchmarking these two methods, the inversion method and the method of Cholesky decomposition. The Cholesky method consistently outperforms the inversion method in computing efficiency; however, its edge over the inversion method drops off with increasing $N$ keeping $P$ constant, while its edge improves with increasing $P$ keeping $N$ constant.
+	Code for implementing this method is shown in the appendix to this paper. Data are simulated such that $X$ is a $N \times P$ matrix of random draws from the standard normal distribution and $y$ is a $N$ vector of random draws from the standard normal distribution. Below are results from benchmarking our two methods, the inversion method and the method of Cholesky decomposition. The Cholesky method consistently outperforms the inversion method in computing efficiency; however, its edge over the inversion method drops off with increasing $N$ keeping $P$ constant, while its edge improves with increasing $P$ keeping $N$ constant.
 	\begin{figure}[htp!]
 		\centering
 		\includegraphics[scale = 0.4]{screenshot1.png}
@@ -259,7 +300,7 @@
 		\caption{Benchmarking the inversion and Cholesky method for different $N$ and $P$}
 	\end{figure}
 	\item %d
-	The \texttt{Matrix} package in R is suited to handle sparse matrices. We do this by redefining $X$ as \texttt{X <- Matrix(X, sparse = TRUE)}. By doing this, R streamlines its handling of the $X$ matrix and subsequent matrix products incorporating $X$ by storing $X$ as a coordinate list of non-zero entries as opposed to a matrix with many zeros within it. For the sparse method, we again use the Cholesky decomposition after converting $X$ to a sparse matrix. In the benchmarks below, we see the computational advantage gained by handling $X$ in this fashion. Here, $\alpha$ represents the density of $X$, i.e., the proportion of entries which are non-zero. The increase in efficiency is more noticeable with higher sparsity, although even for $\alpha = 0.25$ the effect is still quite dramatic. 
+	The \texttt{Matrix} package in R is suited to handle sparse matrices. We do this by redefining $X$ as \texttt{X <- Matrix(X, sparse = TRUE)}. By doing this, R streamlines its handling of the $X$ matrix and subsequent matrix products incorporating $X$ by storing $X$ as a coordinate list of non-zero entries as opposed to a matrix with many zeros within it. For the sparse method, we again use the Cholesky decomposition after converting $X$ to a sparse matrix. In the benchmarks below, we see the computational advantage gained by handling $X$ in this fashion. Here, $\alpha$ represents the density of $X$, i.e., the proportion of entries which are non-zero. The increase in efficiency is more noticeable with higher sparsity, although even for $\alpha = 0.25$ (which gives a matrix which is not very sparse) the effect is still quite dramatic. 
 	\begin{figure}[htp!]
 		\includegraphics[scale=0.4]{ss11.png}
 		\includegraphics[scale=0.4]{ss12.png} \\ \\
@@ -308,7 +349,7 @@
 		&= - \left \{ \sum_{i=1}^{N} \left ( \log\binom {m_i}{y_i} + y_i \log\left ( \frac{1}{1+\exp(-x_i^T\beta)} \right ) + (m_i-y_i)\log\left ( \frac{\exp(-x_i^T\beta)}{1+\exp(-x_i^T\beta)} \right) \right ) \right \} \\
 		& = - \left \{ \sum_{i=1}^{N} \left ( \log\binom {m_i}{y_i} - y_i\log(1+\exp(-x_i^T\beta)) - (m_i-y_i)x_i^T\beta -m_i\log(1+\exp(-x_i^T\beta)) + y_i\log(1+\exp(-x_i^T\beta)) \right ) \right \} \\
 		& = - \left \{ \sum_{i=1}^{N} \left ( \log\binom {m_i}{y_i} - (m_i-y_i)x_i^T\beta -m_i\log(1+\exp(-x_i^T\beta)) \right ) \right \} \\
-		& = \sum_{i=1}^{N} \left ((m_i-y_i)x_i^T\beta +m_i\log(1+\exp(-x_i^T\beta)) - \log\binom {m_i}{y_i} \right ) \\
+		& = \sum_{i=1}^{N} \left ((m_i-y_i)x_i^T\beta +m_i\log(1+\exp(-x_i^T\beta)) - \log\binom {m_i}{y_i} \right ) \label{finalll}
 		%%%
 		%%%
 		%%%
@@ -334,11 +375,13 @@
 %%
 %%
 \item % B
-	Code for implementing the gradient descent method is shown in the appendix. Note that we normalize the values in the $X$ matrix and add a column of 1's to make an intercept term. We start by having an initial arbitrary guess for $\beta$, which we define as $\beta_0$. Then we use an iterative process to converge upon the true value of $\beta$ based on the calculated gradient of the log likelihood at $\hat{\beta}_t$ and an arbitrary step size, $\alpha$, as follows:
+	Code for implementing the gradient descent method is shown in the appendix. Note that we normalize the values in the $X$ matrix and add a column of 1's to make an intercept term. We start by having an initial arbitrary guess for $\beta$, which we define as $\beta_0$. We must be cautious when computing the log likelihood in our. Eqn. (\ref{finalll}) includes the term $\log(1+\exp(-x_i^T\beta))$. If $-x_i^T\beta$ is very large (larger than about 700) then R will return $\exp(-x_i^T\beta)$ as \texttt{Inf}, so in my code I handle this by giving $\log(1+\exp(-x_i^T\beta)) \approx -x_i^T\beta$ for the case that $-x_i^T\beta$ is larger than 700.
+	
+	 We use an iterative process to converge upon the true value of $\beta$ based on the calculated gradient of the log likelihood at $\hat{\beta}_t$ and an arbitrary step size, $\alpha$, as follows:
 	\begin{align}
 		\hat{\beta}_{t+1} = \hat{\beta}_t - \alpha \times \nabla\ell(\hat{\beta}_t)
 	\end{align}
-	We use an intial guess of $\beta_0 = 0$, a step size of $\alpha = 0.025$, and 50,000 iterations and reach convergence in optimizing the log likelihood, as shown in the trace plot below. Our final estimations of ${\beta}$ are reported below along with estimations from R's native \texttt{glm} function. The two sets of estimates are in close agreement with one another.
+	We use an intial guess of $\beta_0 = 0$, a step size of $\alpha = 0.025$, and 50,000 iterations and reach convergence in optimizing the log likelihood, as shown in the trace plot below. Our final estimations of ${\beta}$ are reported along with estimations from R's native \texttt{glm} function. The two sets of estimates are in close agreement with one another.
 	%
 	%
 	%
@@ -348,12 +391,12 @@
 	%
 		\begin{figure}[htp!]
 		\centering
-%			\includegraphics[scale=0.5]{beta_trace1.png}
+			\includegraphics[scale=0.5]{beta_trace1.png}
+			\caption{Log likelihood trace plot for gradient descent}
 		\end{figure}
 		% Table
 		\begin{table}
 		\centering
-		\label{my-label}
 		\begin{tabular}{l|r|r}
 		                        & Grad descent & R: \texttt{glm} \\ \hline
 								\\[-1em]
@@ -390,7 +433,8 @@
 	We need to calculate the Hessian matrix of the log likelihood function, $\nabla^2 \ell(\beta) $. The Hessian will be a $P\times P$ matrix, with the element in row $i$ and column $j$ being\footnote{Notice the reindexing shown below for summations.} 
 	\begin{align}
 		\frac{\partial^2}{\partial \beta_i \partial \beta _j}\ell (\beta) &= \frac{\partial}{\partial \beta_i} \left ( \frac{\partial}{\partial \beta_j} \ell (\beta) \right ) \\
-		&= \frac{\partial}{\partial \beta_i} \left ( \frac{\partial}{\partial \beta_j} \sum_{k=1}^N(\ldots) \right ) \\
+		&= \frac{\partial}{\partial \beta_i} \left ( \frac{\partial}{\partial \beta_j} \sum_{k=1}^N \left [(m_k-y_k)x_i^T\beta +m_k\log(1+\exp(-x_k^T\beta)) - \log\binom {m_k}{y_k} \right ] \right ) \\
+		&= \frac{\partial}{\partial \beta_i} \left ( \nabla_j \ell(\beta) \right ) \\
 		&= \frac{\partial}{\partial \beta_i} \left ( \sum_{k=1}^N(m_kw_k-y_k)x_{kj} \right )  \\
 		&= \sum_{k=1}^{N} x_{ki}x_{kj}m_k w_k(1-w_k)
 	\end{align}
@@ -431,6 +475,11 @@ Now we use Newton's to estimate $\beta$. This is also an iterative process, thou
 \begin{align}
 	\hat{\beta}_{t+1} = \hat{\beta}_t - (\nabla^2\ell(\hat{\beta}_t))^{-1}\nabla\ell(\hat{\beta_t})
 \end{align}
+		\begin{figure}[htp!]
+		\centering
+			\includegraphics[scale=0.5]{beta_trace2.png}
+			\caption{Log likelihood trace plot for Newton's method}
+		\end{figure}
 \begin{figure}[htp!]
 		\centering
 		\label{my-label2}
@@ -466,8 +515,9 @@ Now we use Newton's to estimate $\beta$. This is also an iterative process, thou
 %%
 %%
 %%
+\pagebreak
 \item % E
-Gradient descent requires many iterations, and there is no simple way to know what step size is wise. In contrast, Newton's method converges upon the MLE with far fewer iterations. However, for Newton's method we must invert the Hessian matrix, is computationally intensive for large matrices and will be impossible if the Hessian is singular.
+Gradient descent requires many iterations, and there is no simple way to know what step size is wise, or even to know just how many iterations are sufficient to reach convergence. The only way to find out is to experiment with different numbers of iterations and step sizes. In contrast, Newton's method converges upon the MLE with far fewer iterations because we are using knowledge of the ``curvature" of our function to be minimized. However, for Newton's method we must invert the Hessian matrix, which is computationally intensive for large matrices, and potentially unstable, leaving us vulnerable to floating point errors. It also possible that the Hessian matrix has no closed form solution or is so convoluted as to make its computation difficult.
 %%
 %%
 %%

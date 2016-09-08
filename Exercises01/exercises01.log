@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015) (preloaded format=xelatex 2015.5.24)  1 SEP 2016 22:41
+This is XeTeX, Version 3.14159265-2.6-0.99992 (TeX Live 2015) (preloaded format=xelatex 2015.5.24)  8 SEP 2016 00:03
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -174,42 +174,78 @@ Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
 LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
 (Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
 ))
-(/usr/local/texlive/2015/texmf-dist/tex/latex/algorithms/algorithm.sty
-Invalid UTF-8 byte or sequence at line 11 replaced by U+FFFD.
-Package: algorithm 2009/08/24 v0.1 Document Style `algorithm' - floating enviro
-nment
+(/usr/local/texlive/2015/texmf-dist/tex/latex/algorithm2e/algorithm2e.sty
+Invalid UTF-8 byte or sequence at line 164 replaced by U+FFFD.
+Invalid UTF-8 byte or sequence at line 414 replaced by U+FFFD.
+Package: algorithm2e 2013/01/06 v5.00 algorithms environments
+\c@AlgoLine=\count107
 
-(/usr/local/texlive/2015/texmf-dist/tex/latex/float/float.sty
-Package: float 2001/11/08 v1.3d Float enhancements (AL)
-\c@float@type=\count107
-\float@exts=\toks23
-\float@box=\box30
-\@float@everytoks=\toks24
-\@floatcapt=\box31
-)
 (/usr/local/texlive/2015/texmf-dist/tex/latex/base/ifthen.sty
 Package: ifthen 2014/09/29 v1.1c Standard LaTeX ifthen package (DPC)
 )
-\@float@every@algorithm=\toks25
-\c@algorithm=\count108
+(/usr/local/texlive/2015/texmf-dist/tex/latex/tools/xspace.sty
+Package: xspace 2014/10/28 v1.13 Space after command names (DPC,MH)
 )
-(/usr/local/texlive/2015/texmf-dist/tex/latex/algorithmicx/algpseudocode.sty
+(/usr/local/texlive/2015/texmf-dist/tex/latex/relsize/relsize.sty
+Package: relsize 2013/03/29 ver 4.1
+)
+********************************************************
+Package `algorithm2e' Release 5.0 -- january 06 2013 --
+- algorithm2e-announce@lirmm.fr mailing list for announcement about releases
+- algorithm2e-discussion@lirmm.fr mailing list for discussion about package
+subscribe by emailing sympa@lirmm.fr with 'subscribe <list> <firstname name>'
+- Author: Christophe Fiorio (cfiorio@um2.fr)
+********************************************************
+\skiptotal=\skip55
+\skiplinenumber=\skip56
+\skiprule=\skip57
+\skiphlne=\skip58
+\skiptext=\skip59
+\skiplength=\skip60
+\algomargin=\skip61
+\skipalgocfslide=\skip62
+\algowidth=\dimen118
+\inoutsize=\dimen119
+\inoutindent=\dimen120
+\interspacetitleruled=\dimen121
+\interspacealgoruled=\dimen122
+\interspacetitleboxruled=\dimen123
+\algocf@inoutbox=\box30
+\algocf@inputbox=\box31
+\AlCapSkip=\skip63
+\AlCapHSkip=\skip64
+\algoskipindent=\skip65
+\algocf@nlbox=\box32
+\algocf@hangingbox=\box33
+\algocf@untilbox=\box34
+\algocf@skipuntil=\skip66
+\algocf@capbox=\box35
+\algoheightruledefault=\skip67
+\algoheightrule=\skip68
+\algotitleheightruledefault=\skip69
+\algotitleheightrule=\skip70
+\c@algocfline=\count108
+\c@algocfproc=\count109
+\c@algocf=\count110
+\algocf@algoframe=\box36
+\algocf@algobox=\box37
+) (/usr/local/texlive/2015/texmf-dist/tex/latex/algorithmicx/algpseudocode.sty
 Package: algpseudocode 
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/algorithmicx/algorithmicx.sty
 Package: algorithmicx 2005/04/27 v1.2 Algorithmicx
 
 Document Style algorithmicx 1.2 - a greatly improved `algorithmic' style
-\c@ALG@line=\count109
-\c@ALG@rem=\count110
-\c@ALG@nested=\count111
-\ALG@tlm=\skip55
-\ALG@thistlm=\skip56
-\c@ALG@Lnr=\count112
-\c@ALG@blocknr=\count113
-\c@ALG@storecount=\count114
-\c@ALG@tmpcounter=\count115
-\ALG@tmplength=\skip57
+\c@ALG@line=\count111
+\c@ALG@rem=\count112
+\c@ALG@nested=\count113
+\ALG@tlm=\skip71
+\ALG@thistlm=\skip72
+\c@ALG@Lnr=\count114
+\c@ALG@blocknr=\count115
+\c@ALG@storecount=\count116
+\c@ALG@tmpcounter=\count117
+\ALG@tmplength=\skip73
 )
 Document Style - pseudocode environments for use with the `algorithmicx' style
 ) (/usr/local/texlive/2015/texmf-dist/tex/latex/easy/easytable.sty
@@ -217,116 +253,116 @@ Document Style `easytable' v1.0 <2001/06/13>.
 (/usr/local/texlive/2015/texmf-dist/tex/latex/easy/easy.sty
 Document Style `easy' v1.1 <2001/05/31>.
 Package: easy 2001/05/31 v1.1
-\@easy@level=\count116
-\@easy@ncol=\count117
-\@easy@nrow=\count118
-\@easy@cnt=\count119
-\@easy@boxviii=\box32
-\@easy@minxviii=\dimen118
-\@easy@minyviii=\dimen119
-\@easy@maxxviii=\dimen120
-\@easy@maxyviii=\dimen121
-\@easy@boxvii=\box33
-\@easy@minxvii=\dimen122
-\@easy@minyvii=\dimen123
-\@easy@maxxvii=\dimen124
-\@easy@maxyvii=\dimen125
-\@easy@boxvi=\box34
-\@easy@minxvi=\dimen126
-\@easy@minyvi=\dimen127
-\@easy@maxxvi=\dimen128
-\@easy@maxyvi=\dimen129
-\@easy@boxv=\box35
-\@easy@minxv=\dimen130
-\@easy@minyv=\dimen131
-\@easy@maxxv=\dimen132
-\@easy@maxyv=\dimen133
-\@easy@boxiv=\box36
-\@easy@minxiv=\dimen134
-\@easy@minyiv=\dimen135
-\@easy@maxxiv=\dimen136
-\@easy@maxyiv=\dimen137
-\@easy@boxiii=\box37
-\@easy@minxiii=\dimen138
-\@easy@minyiii=\dimen139
-\@easy@maxxiii=\dimen140
-\@easy@maxyiii=\dimen141
-\@easy@boxii=\box38
-\@easy@minxii=\dimen142
-\@easy@minyii=\dimen143
-\@easy@maxxii=\dimen144
-\@easy@maxyii=\dimen145
-\@easy@boxi=\box39
-\@easy@minxi=\dimen146
-\@easy@minyi=\dimen147
-\@easy@maxxi=\dimen148
-\@easy@maxyi=\dimen149
-\@easy@hsizexxx=\dimen150
-\@easy@vsizexxx=\dimen151
-\@easy@hsizexxix=\dimen152
-\@easy@vsizexxix=\dimen153
-\@easy@hsizexxviii=\dimen154
-\@easy@vsizexxviii=\dimen155
-\@easy@hsizexxvii=\dimen156
-\@easy@vsizexxvii=\dimen157
-\@easy@hsizexxvi=\dimen158
-\@easy@vsizexxvi=\dimen159
-\@easy@hsizexxv=\dimen160
-\@easy@vsizexxv=\dimen161
-\@easy@hsizexxiv=\dimen162
-\@easy@vsizexxiv=\dimen163
-\@easy@hsizexxiii=\dimen164
-\@easy@vsizexxiii=\dimen165
-\@easy@hsizexxii=\dimen166
-\@easy@vsizexxii=\dimen167
-\@easy@hsizexxi=\dimen168
-\@easy@vsizexxi=\dimen169
-\@easy@hsizexx=\dimen170
-\@easy@vsizexx=\dimen171
-\@easy@hsizexix=\dimen172
-\@easy@vsizexix=\dimen173
-\@easy@hsizexviii=\dimen174
-\@easy@vsizexviii=\dimen175
-\@easy@hsizexvii=\dimen176
-\@easy@vsizexvii=\dimen177
-\@easy@hsizexvi=\dimen178
-\@easy@vsizexvi=\dimen179
-\@easy@hsizexv=\dimen180
-\@easy@vsizexv=\dimen181
-\@easy@hsizexiv=\dimen182
-\@easy@vsizexiv=\dimen183
-\@easy@hsizexiii=\dimen184
-\@easy@vsizexiii=\dimen185
-\@easy@hsizexii=\dimen186
-\@easy@vsizexii=\dimen187
-\@easy@hsizexi=\dimen188
-\@easy@vsizexi=\dimen189
-\@easy@hsizex=\dimen190
-\@easy@vsizex=\dimen191
-\@easy@hsizeix=\dimen192
-\@easy@vsizeix=\dimen193
-\@easy@hsizeviii=\dimen194
-\@easy@vsizeviii=\dimen195
-\@easy@hsizevii=\dimen196
-\@easy@vsizevii=\dimen197
-\@easy@hsizevi=\dimen198
-\@easy@vsizevi=\dimen199
-\@easy@hsizev=\dimen200
-\@easy@vsizev=\dimen201
-\@easy@hsizeiv=\dimen202
-\@easy@vsizeiv=\dimen203
-\@easy@hsizeiii=\dimen204
-\@easy@vsizeiii=\dimen205
-\@easy@hsizeii=\dimen206
-\@easy@vsizeii=\dimen207
-\@easy@hsizei=\dimen208
-\@easy@vsizei=\dimen209
-\@easy@dash@len=\dimen210
-\@easy@dash@sep=\dimen211
+\@easy@level=\count118
+\@easy@ncol=\count119
+\@easy@nrow=\count120
+\@easy@cnt=\count121
+\@easy@boxviii=\box38
+\@easy@minxviii=\dimen124
+\@easy@minyviii=\dimen125
+\@easy@maxxviii=\dimen126
+\@easy@maxyviii=\dimen127
+\@easy@boxvii=\box39
+\@easy@minxvii=\dimen128
+\@easy@minyvii=\dimen129
+\@easy@maxxvii=\dimen130
+\@easy@maxyvii=\dimen131
+\@easy@boxvi=\box40
+\@easy@minxvi=\dimen132
+\@easy@minyvi=\dimen133
+\@easy@maxxvi=\dimen134
+\@easy@maxyvi=\dimen135
+\@easy@boxv=\box41
+\@easy@minxv=\dimen136
+\@easy@minyv=\dimen137
+\@easy@maxxv=\dimen138
+\@easy@maxyv=\dimen139
+\@easy@boxiv=\box42
+\@easy@minxiv=\dimen140
+\@easy@minyiv=\dimen141
+\@easy@maxxiv=\dimen142
+\@easy@maxyiv=\dimen143
+\@easy@boxiii=\box43
+\@easy@minxiii=\dimen144
+\@easy@minyiii=\dimen145
+\@easy@maxxiii=\dimen146
+\@easy@maxyiii=\dimen147
+\@easy@boxii=\box44
+\@easy@minxii=\dimen148
+\@easy@minyii=\dimen149
+\@easy@maxxii=\dimen150
+\@easy@maxyii=\dimen151
+\@easy@boxi=\box45
+\@easy@minxi=\dimen152
+\@easy@minyi=\dimen153
+\@easy@maxxi=\dimen154
+\@easy@maxyi=\dimen155
+\@easy@hsizexxx=\dimen156
+\@easy@vsizexxx=\dimen157
+\@easy@hsizexxix=\dimen158
+\@easy@vsizexxix=\dimen159
+\@easy@hsizexxviii=\dimen160
+\@easy@vsizexxviii=\dimen161
+\@easy@hsizexxvii=\dimen162
+\@easy@vsizexxvii=\dimen163
+\@easy@hsizexxvi=\dimen164
+\@easy@vsizexxvi=\dimen165
+\@easy@hsizexxv=\dimen166
+\@easy@vsizexxv=\dimen167
+\@easy@hsizexxiv=\dimen168
+\@easy@vsizexxiv=\dimen169
+\@easy@hsizexxiii=\dimen170
+\@easy@vsizexxiii=\dimen171
+\@easy@hsizexxii=\dimen172
+\@easy@vsizexxii=\dimen173
+\@easy@hsizexxi=\dimen174
+\@easy@vsizexxi=\dimen175
+\@easy@hsizexx=\dimen176
+\@easy@vsizexx=\dimen177
+\@easy@hsizexix=\dimen178
+\@easy@vsizexix=\dimen179
+\@easy@hsizexviii=\dimen180
+\@easy@vsizexviii=\dimen181
+\@easy@hsizexvii=\dimen182
+\@easy@vsizexvii=\dimen183
+\@easy@hsizexvi=\dimen184
+\@easy@vsizexvi=\dimen185
+\@easy@hsizexv=\dimen186
+\@easy@vsizexv=\dimen187
+\@easy@hsizexiv=\dimen188
+\@easy@vsizexiv=\dimen189
+\@easy@hsizexiii=\dimen190
+\@easy@vsizexiii=\dimen191
+\@easy@hsizexii=\dimen192
+\@easy@vsizexii=\dimen193
+\@easy@hsizexi=\dimen194
+\@easy@vsizexi=\dimen195
+\@easy@hsizex=\dimen196
+\@easy@vsizex=\dimen197
+\@easy@hsizeix=\dimen198
+\@easy@vsizeix=\dimen199
+\@easy@hsizeviii=\dimen200
+\@easy@vsizeviii=\dimen201
+\@easy@hsizevii=\dimen202
+\@easy@vsizevii=\dimen203
+\@easy@hsizevi=\dimen204
+\@easy@vsizevi=\dimen205
+\@easy@hsizev=\dimen206
+\@easy@vsizev=\dimen207
+\@easy@hsizeiv=\dimen208
+\@easy@vsizeiv=\dimen209
+\@easy@hsizeiii=\dimen210
+\@easy@vsizeiii=\dimen211
+\@easy@hsizeii=\dimen212
+\@easy@vsizeii=\dimen213
+\@easy@hsizei=\dimen214
+\@easy@vsizei=\dimen215
+\@easy@dash@len=\dimen216
+\@easy@dash@sep=\dimen217
 )
 Package: easytable 2001/05/31v1.1
-\@tab@size@rule=\dimen212
-\@tab@size@dash=\dimen213
+\@tab@size@rule=\dimen218
+\@tab@size@dash=\dimen219
 ) (/usr/local/texlive/2015/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2014/09/06 1.5e listings language file
 )
@@ -336,39 +372,47 @@ File: lstlang2.sty 2014/09/06 1.5e listings language file
 (/usr/local/texlive/2015/texmf-dist/tex/latex/listings/lstlang3.sty
 File: lstlang3.sty 2014/09/06 1.5e listings language file
 )
-\c@homeworkProblemCounter=\count120
+\c@homeworkProblemCounter=\count122
 
 (./exercises01.aux)
 \openout1 = `exercises01.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 163.
-LaTeX Font Info:    ... okay on input line 163.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 163.
-LaTeX Font Info:    ... okay on input line 163.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 163.
-LaTeX Font Info:    ... okay on input line 163.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 163.
-LaTeX Font Info:    ... okay on input line 163.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 163.
-LaTeX Font Info:    ... okay on input line 163.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 163.
-LaTeX Font Info:    ... okay on input line 163.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 164.
+LaTeX Font Info:    ... okay on input line 164.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 164.
+LaTeX Font Info:    ... okay on input line 164.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 164.
+LaTeX Font Info:    ... okay on input line 164.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 164.
+LaTeX Font Info:    ... okay on input line 164.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 164.
+LaTeX Font Info:    ... okay on input line 164.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 164.
+LaTeX Font Info:    ... okay on input line 164.
 Package lastpage Info: Please have a look at the pageslts package at
 (lastpage)             https://www.ctan.org/pkg/pageslts
-(lastpage)             ! on input line 163.
-\c@lstlisting=\count121
-LaTeX Font Info:    Try loading font information for U+msa on input line 165.
+(lastpage)             ! on input line 164.
+\c@lstlisting=\count123
+LaTeX Font Info:    Try loading font information for U+msa on input line 166.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 165.
+LaTeX Font Info:    Try loading font information for U+msb on input line 166.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) [1
 
 ] [2]
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 265.
+
+
+(/usr/local/texlive/2015/texmf-dist/tex/latex/base/omscmr.fd
+File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 265.
 File: screenshot1.png Graphic file (type QTm)
 
 <use  "screenshot1.png" >
@@ -392,48 +436,58 @@ File: ss31.png Graphic file (type QTm)
  <use  "ss31.png" >
 File: ss32.png Graphic file (type QTm)
  <use  "ss32.png" >
-Underfull \hbox (badness 10000) in paragraph at lines 264--270
+Underfull \hbox (badness 10000) in paragraph at lines 305--311
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 264--270
+Underfull \hbox (badness 10000) in paragraph at lines 305--311
 
  []
 
 [3] [4]
-Overfull \hbox (61.36023pt too wide) in paragraph at lines 315--315
+Overfull \hbox (61.36023pt too wide) in paragraph at lines 356--356
 [] 
  []
 
-[5]
-Underfull \hbox (badness 10000) in paragraph at lines 401--403
+File: beta_trace1.png Graphic file (type QTm)
+<use  "beta_trace1.png" > [5]
+Underfull \hbox (badness 10000) in paragraph at lines 445--447
 
  []
 
 
-Overfull \hbox (27.97995pt too wide) in paragraph at lines 404--404
+Overfull \hbox (27.97995pt too wide) in paragraph at lines 448--448
 [][]\OT1/cmr/m/n/8 Help with com-plet-ing the square ob-tained from: \OT1/cmtt/
 m/n/8 https://justindomke.wordpress.com/completing-the-square-in-n-dimensions/|
  
  []
 
-[6] [7] [8] (./exercises01.R
+[6]
+File: beta_trace2.png Graphic file (type QTm)
+ <use  "beta_trace2.png" > [7] [8] [9] (./exercises01.R
 LaTeX Font Info:    Try loading font information for T1+pcr on input line 1.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/psnfss/t1pcr.fd
 File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
-) [9]) [10]
-(./exercises01pt2.R [11]) 
-AED: lastpage setting LastPage
-[12] (./exercises01.aux) ) 
-Here is how much of TeX's memory you used:
- 4924 strings out of 493706
- 64800 string characters out of 6145769
- 191299 words of memory out of 5000000
- 8187 multiletter control sequences out of 15000+600000
- 13680 words of font info for 53 fonts, out of 8000000 for 9000
- 1328 hyphenation exceptions out of 8191
- 28i,12n,43p,831b,2309s stack positions out of 5000i,500n,10000p,200000b,80000s
+) [10]) [11]
+(./exercises01pt2.R
+Overfull \hbox (6.52357pt too wide) in paragraph at lines 25--27
+[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][
+][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+[][][][][][][][][][][][][][][][][][][][][][][][] 
+ []
 
-Output written on exercises01.pdf (12 pages).
+[12]) 
+AED: lastpage setting LastPage
+[13] (./exercises01.aux) ) 
+Here is how much of TeX's memory you used:
+ 6211 strings out of 493706
+ 83062 string characters out of 6145769
+ 232434 words of memory out of 5000000
+ 9464 multiletter control sequences out of 15000+600000
+ 14926 words of font info for 58 fonts, out of 8000000 for 9000
+ 1328 hyphenation exceptions out of 8191
+ 29i,12n,43p,879b,2309s stack positions out of 5000i,500n,10000p,200000b,80000s
+
+Output written on exercises01.pdf (13 pages).

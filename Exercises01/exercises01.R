@@ -1,5 +1,5 @@
 ###########################################################
-######### Created by Spencer Woody on 24 Aug 2016 #########
+######### Created by Spencer Woody on 07 Sep 2016 #########
 ###########################################################
 
 library(Matrix)
@@ -71,8 +71,6 @@ Cho.decompSPARSE <- function(X.Cho, W.Cho, y.Cho) {
 	
 	return(bhat.Cho)
 }
-
-
 
 microbenchmark(
 	Inv.method(X, W, y),
