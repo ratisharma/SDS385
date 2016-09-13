@@ -1,3 +1,3 @@
-# README.md for Exercises02
+# Exercises02
 
-CHANGESSSS
+In this exercise, I explore the method of stochastic gradient descent. 
