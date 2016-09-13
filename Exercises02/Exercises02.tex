@@ -229,6 +229,33 @@
 	%
 	%
 	\item %%%%%%%%%%%%%% C
+	In this case, we perform SGD with $400,000$ iterations of samples with replacement and a step size $\alpha$ of $0.0003$. Our initial guess for $\beta$, $\hat{\beta}_0$ is some distance from the result of $\beta$ from Newton's method. That distance is 5 plus some noise from the $\text{Exp}(1)$ distribution in either the positive or negative direction. Trace plots of all elements of $\hat{\beta}_k$ for each iteration are shown below in Figure \ref{SGD}. The red horizontal lines represent the values of $\hat{\beta}$ obtained from Newton's method. Also shown is trace plot of the exponential moving average (EMA) over the previous 500 iterations of the log-likelihood in Figure \ref{SGDlik}. We use the EMA to reduce the level of noise in our log-likelihood plot. 
+	%
+	%
+	%
+	\pagebreak
+	\begin{align}
+		\hat{\beta}_{k+1} = \hat{\beta}_k - \alpha \nabla \ell (\hat{\beta}_k)
+	\end{align}
+	%
+	%
+	%
+	\begin{figure}[htp!]
+		\centering
+		\includegraphics[scale=0.7]{SGD.pdf}
+		\caption{Trace plot of all elements of $\hat{\beta}$ from SGD}
+		\label{SGD}
+	\end{figure}
+	\pagebreak
+	%
+	%
+	%
+	\begin{figure}[htp!]
+		\centering
+		\includegraphics[scale=0.5]{EMAloglik.pdf}
+		\caption{Trace plot of EMA of log-likelihood}
+		\label{SGDlik}
+	\end{figure}
 	%
 	%
 	%

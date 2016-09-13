@@ -12,16 +12,13 @@ X <- as.matrix(wdbc[, 3:12])
 X <- scale(X)
 X <- cbind(rep(1, nrow(X)), X)
 
-n <- nrow(X)
-
 y <- wdbc[, 2]
 y <- y == "M"
 m.i <- 1
 
-# # # # # # # # # # # # # # # # # # # # # # # # # 
-# # # # # # # # # # # # # # # # # # # # # # # # # 
-# # # # # # # # # # # # # # # # # # # # # # # # # 
-# # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # #
 
 # Function for computing w.i (logit transform of Xtbeta)
 
@@ -46,17 +43,10 @@ grad.loglik <- function(beta, y, X, mi){
   return(grad)
 }
 
+# # # # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # #
 
-
-# # # # # # # # # # # # # # # # # # # # # # # # # 
-# # # # # # # # # # # # # # # # # # # # # # # # # 
-# # # # # # # # # # # # # # # # # # # # # # # # # 
-# # # # # # # # # # # # # # # # # # # # # # # # # 
-
-microbenchmark(
-solve(Hessian, grad.loglik(as.matrix(rep(0, ncol(X))), y, X, m.i)),
-qr.solve(Hessian, grad.loglik(as.matrix(rep(0, ncol(X))), y, X, m.i))
-)
 ### NEWTON'S METHOD (results are referred to as beta.N)
 
 beta.N <- as.matrix(rep(0, ncol(X)))
@@ -128,19 +118,35 @@ SGD <- function(n.iterSGD,  beta.init, step.size, X, y, m.i) {
 		return(betaSGD)
 }
 
+# Create initial values of beta which are some distance away from "true" values
+# of beta computed from Newton's method. At least 5 units away plus some 
+# exponential noise, in either positive or negative direction
+beta1 <- beta.N + (-1) ^ rbinom(ncol(X), 1, 0.5) * (5 + rexp(ncol(X), rate = 1))
 
-beta1 <- beta.N + (-1) ^ rbinom(ncol(X), 1, 0.5) * (10 + rexp(ncol(X), rate = 1))
+# Set number of iterations and stepsize
+my.iter <- 4e5
+my.stepsize <- 0.0003
 
+# Perform SGD, graph trace plot of betas
+sgd1 <- SGD(my.iter, beta1, my.stepsize, X, y, m.i)
+graph.betatrace(sgd1, beta.N, "SGD.pdf")
 
-sgd1 <- SGD(4e5, beta1, 0.0005, X, y, m.i)
-graph.betatrace(sgd1, beta.N, "test.pdf")
+# Compute loglikelihood from results of SGD
+trace1 <- loglik(sgd1, y, X, m.i)
 
+# Set time period for moving average
+my.time <- 500
 
-trace <- loglik(sgd1, y, X, m.i)
-
-# Plot exponential moving average of likelihood 
-
-plot(EMA(trace1, n = 100), type = "l", log = "xy")
+# Create plot of EMA of log-likelihood
+pdf("EMAloglik.pdf")
+plot(EMA(trace1, n = my.time), 
+	type = "l", 
+	main = "Exponential moving average of log-likelihood",
+	xlab = "iteration",
+	ylab = "Log-likelihood",
+	xlim = c(my.time, length(trace1)),
+	log = "x")
+dev.off()
 
 # Decaying steps
 
