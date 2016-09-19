@@ -229,18 +229,22 @@
 	%
 	%
 	\item %%%%%%%%%%%%%% C
-	In this case, we perform SGD with $400,000$ iterations of samples with replacement and a step size $\alpha$ of $0.0003$. Our initial guess for $\beta$, $\hat{\beta}_0$ is some distance from the result of $\beta$ from Newton's method. That distance is 5 plus some noise from the $\text{Exp}(1)$ distribution in either the positive or negative direction. Trace plots of all elements of $\hat{\beta}_k$ for each iteration are shown below in Figure \ref{SGD}. The red horizontal lines represent the values of $\hat{\beta}$ obtained from Newton's method. Also shown is trace plot of the exponential moving average (EMA) over the previous 500 iterations of the log-likelihood in Figure \ref{SGDlik}. We use the EMA to reduce the level of noise in our log-likelihood plot. 
+	In this case, we perform SGD with $100,000$ iterations of samples with replacement and a step size $\alpha$ of $0.0001$. Our initial guess for $\beta$, $\hat{\beta}_0$ is some distance from the result of $\beta$ from Newton's method. That distance is 5 plus some noise from the $\text{Exp}(1)$ distribution in either the positive or negative direction. Trace plots of all elements of $\hat{\beta}_k$ for each iteration are shown below in Figure \ref{SGD}. The red horizontal lines represent the values of $\hat{\beta}$ obtained from Newton's method. 
+	
+	Also shown is trace plot of the exponential moving average (EMA) over the previous all iterations of the log-likelihood in Figure \ref{SGDlik}. Note that at each iteration, we are only computing the ``partial'' likelihood, that is, the likelihood using the randomly chosen data point and the newly computed $\hat{\beta}$ at that iteration. We use the EMA to reduce the level of noise in our log-likelihood plot. The EMA at the $k$th iteration, $S_k$, when the $i$th data point is sampled is calculated recursively by the formula $S_k = a \times \ell_i(\hat{\beta}_k) + (1-a) \times S_{k-1}$ with $S_1 = \ell_i(\beta_1)$, $a \in (0,1)$. We choose a small value of $a = 0.5 / n$ to reduce noise sufficiently and produce an interpretable graph.
+	
+	Interestingly, our likelihood seems to converge to stationarity fairly quickly, before the $20,000$th iteration. Most elements of $\hat{\beta}$ converge to their ``true''value by around the $10,000$th iteration and then bounce around that value for each subsequent iterations. However, not all of the elements of $\hat{beta}$ reach this point of convergence, specifically $\hat{\beta}_2$ and $\hat{\beta}_5$ shown in Figure \ref{SGD}. Despite this, our likelihood has still converged. This suggests that these coefficients have high variance (i.e., are ``insignificant'' to our model). $100,000$ iterations is significantly more than the number of iterations used in batch gradient descent (fewer than $50,000$) but this is still pretty remarkable considering that we only touch one data point at a time. 
 	%
 	%
 	%
 	\pagebreak
 	\begin{align}
-		\hat{\beta}_{k+1} = \hat{\beta}_k - \alpha \nabla \ell_i (\hat{\beta}_k)
+		\hat{\beta}_{t+1} = \hat{\beta}_t - \gamma \nabla \ell_i (\hat{\beta}_t)
 	\end{align}
 	%
 	%
 	%
-	\begin{figure}[htp!]
+	\begin{figure}%[htp!]
 		\centering
 		\includegraphics[scale=0.7]{SGDbetatrace.pdf}
 		\caption{Trace plot of all elements of $\hat{\beta}$ from SGD}
@@ -250,24 +254,97 @@
 	%
 	%
 	%
-	\begin{figure}[htp!]
+	\begin{figure}%[htp!]
 		\centering
 		\includegraphics[scale=0.5]{SGDloglik.pdf}
-		\caption{Trace plot of EMA of log-likelihood}
+		\caption{Trace plot of EMA of log-likelihood from SGD}
 		\label{SGDlik}
 	\end{figure}
 	%
 	%
 	%
 	\item %%%%%%%%%%%%%% D
+	
+	Now we substitute our fixed step size for a step size that decays over time. Here we use the Robbins-Monro rule for decaying step size, that is, 
+	\begin{align}
+		\gamma{t} = C(t + t_0)^{-alpha}.
+	\end{align}
+	In this case, we choose $C = 0.1$, $\alpha = 0.6$, and $t_0 = 1$. Trace plots for all elements of estimates $\hat{\beta}$ are shown in Figure \ref{SGDd}. We have a measured . The rationale for having a decaying step size is that we eventually get closer to the ``true'' values of $\hat{\beta}$ and then we our step sizes should decay so that we do not deviate too far from the . However, it appears to be the case for some of the $\hat{\beta}$s that our step size decays too rapidly before we reach the true values. For example, $\hat{\beta}_2$ in Figure \ref{SGDd} never gets close to its true value but the step size decays to the point where it can't jump back up. However, for the most part we have a tight distribution around the true values. Figure \ref{SGDlikd} shows the EMA for the partial log-likelihood.
+	
+	%
+	%
+	%
+	%
+	\begin{figure}[htp!]
+		\centering
+		\includegraphics[scale=0.7]{dSGDbetatrace.pdf}
+		\caption{Trace plot of all elements of $\hat{\beta}$ from SGD with decaying step}
+		\label{SGDd}
+	\end{figure}
+	%
+	%
+	%
+	\begin{figure}[htp!]
+		\centering
+		\includegraphics[scale=0.5]{dSGDloglik.pdf}
+		\caption{Trace plot of EMA of log-likelihood from SGD with decaying step}
+		\label{SGDlikd}
+	\end{figure}
+	\pagebreak
 	%
 	%
 	%
 	\item %%%%%%%%%%%%%% E
+	%
+	%
+	%
+	Now, we incorporate. Remember that $\hat{\beta}$ eventually reaches a point of converging to the true values and then oscillates between that true value. Then, to get a final estimate, it makes sense to average out the estimates after some burn-in period with the Polyak-Ruppert (PR) averaging formula 
+	\begin{align}
+		\bar{\beta}^{(t)} = \frac{1}{t}\sum_{k=0}^{t-1}\beta^{(k)}.
+	\end{align}
+	Figure \ref{SGDPR} shows the result of PR-averaging with burn-in of the first two-thirds of estimates for SGD with a fixed stepsize, and Figure \ref{SGDlikPR} shows a trace plot of the corresponding log-likelihood for each iterated $\bar{\beta}^{(t)}$. We achieve a nice smooth decrease in the log-likelihood, and the averaging scheme gets us closer to the true values for most elements in $\hat{\beta}$, provided that we achieved convergence for those elements. Figure \ref{dSGDPR} and Figure \ref{dSGDlikPR} are the corresponding plots for SGD with decaying step size from the previous section.
+	%
+	%
+	%
+	\begin{figure}[htp!]
+		\centering
+		\includegraphics[scale=0.7]{SGDbetatracePR.pdf}
+		\caption{Trace plot of all elements of $\hat{\beta}$ from SGD with PR-averaging}
+		\label{SGDPR}
+	\end{figure}
+	%
+	%
+	%
+	\begin{figure}[htp!]
+		\centering
+		\includegraphics[scale=0.5]{SGDloglikPR.pdf}
+		\caption{Trace plot of EMA of log-likelihood from SGD with PR-averaging}
+		\label{SGDlikPR}
+			\pagebreak
+	\end{figure}
+
+
+
+	\begin{figure}[htp!]
+		\centering
+		\includegraphics[scale=0.7]{dSGDbetatracePR.pdf}
+		\caption{Trace plot of all elements of $\hat{\beta}$ from SGD with decaying steps and PR-averaging}
+		\label{dSGDPR}
+	\end{figure}
+	%
+	%
+	%
+	\begin{figure}[htp!]
+		\centering
+		\includegraphics[scale=0.5]{dSGDloglikPR.pdf}
+		\caption{Trace plot of EMA of log-likelihood from SGD with decaying steps and PR-averaging}
+		\label{dSGDlikPR}
+			\pagebreak
+	\end{figure}
 \end{enumerate}
 \end{homeworkProblem}
 
-
+R code is shown in the appendix of this report.
 
 
 
@@ -275,6 +352,7 @@
 %%	LIST CODE
 %%----------------------------------------------------------------------------------------
 
+\pagebreak
 \pagebreak
 %\rscript{homework03.r}{Sample Perl Script With Highlighting}
 \lstinputlisting[language=R]{SGD.R}
