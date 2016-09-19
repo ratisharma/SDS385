@@ -126,7 +126,7 @@
 %	NAME AND CLASS SECTION
 %----------------------------------------------------------------------------------------
 
-\newcommand{\hmwkTitle}{Exercises 2: Online Learning} % Assignment title
+\newcommand{\hmwkTitle}{Exercises 2 - Online Learning} % Assignment title
 \newcommand{\hmwkDueDate}{\today} % Due date
 \newcommand{\hmwkClass}{SDS\ 385} % Course/class
 \newcommand{\hmwkClassTime}{} % Class/lecture time
@@ -219,7 +219,7 @@
 		%
 		Then we can compute the expectation.
 		\begin{align}
-			\E(g_i(\beta)) &= \sum_{j=1}^n g_j(\beta) P(i = j) \\
+			\E(g_i(\beta)) &= \sum_{j=1}^n g_j(\beta) P(i = j) \label{myeqn}\\
 			&= \sum_{j=1}^n g_j(\beta) \frac{1}{n} \\
 			&= \frac{1}{n} \sum_{j=1}^n g_j(\beta) \\
 			&= \frac{1}{n} \nabla \ell (\beta), \\
@@ -235,14 +235,14 @@
 	%
 	\pagebreak
 	\begin{align}
-		\hat{\beta}_{k+1} = \hat{\beta}_k - \alpha \nabla \ell (\hat{\beta}_k)
+		\hat{\beta}_{k+1} = \hat{\beta}_k - \alpha \nabla \ell_i (\hat{\beta}_k)
 	\end{align}
 	%
 	%
 	%
 	\begin{figure}[htp!]
 		\centering
-		\includegraphics[scale=0.7]{SGD.pdf}
+		\includegraphics[scale=0.7]{SGDbetatrace.pdf}
 		\caption{Trace plot of all elements of $\hat{\beta}$ from SGD}
 		\label{SGD}
 	\end{figure}
@@ -252,7 +252,7 @@
 	%
 	\begin{figure}[htp!]
 		\centering
-		\includegraphics[scale=0.5]{EMAloglik.pdf}
+		\includegraphics[scale=0.5]{SGDloglik.pdf}
 		\caption{Trace plot of EMA of log-likelihood}
 		\label{SGDlik}
 	\end{figure}
