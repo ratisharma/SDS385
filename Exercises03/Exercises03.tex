@@ -1,0 +1,343 @@
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass{article}
+
+\usepackage{fancyhdr} % Required for custom headers
+\usepackage{lastpage} % Required to determine the last page for the footer
+\usepackage{extramarks} % Required for headers and footers
+\usepackage[usenames,dvipsnames]{color} % Required for custom colors
+\usepackage{graphicx} % Required to insert images
+\usepackage{amsmath}
+\usepackage{listings} % Required for insertion of code
+\usepackage[]{algorithm2e}
+%\usepackage{couriernew} % Required for the courier font
+
+\usepackage{enumerate} % Required for enumerating with letters
+
+% Margins
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+
+\linespread{1.1} % Line spacing
+
+% Set up the header and footer
+\pagestyle{fancy}
+\lhead{\hmwkAuthorName} % Top left header
+\chead{\hmwkClass\ : \hmwkTitle} % Top center head
+\rhead{} % Top right header
+\lfoot{\lastxmark} % Bottom left footer
+\cfoot{} % Bottom center footer
+\rfoot{Page\ \thepage\ of\ \protect\pageref{LastPage}} % Bottom right footer
+\renewcommand\headrulewidth{0.4pt} % Size of the header rule
+\renewcommand\footrulewidth{0.4pt} % Size of the footer rule
+
+\setlength\parindent{0pt} % Removes all indentation from paragraphs
+
+%----------------------------------------------------------------------------------------
+%	CODE INCLUSION CONFIGURATION
+%----------------------------------------------------------------------------------------
+
+\definecolor{MyDarkGreen}{rgb}{0.0,0.4,0.0} % This is the color used for comments
+\lstloadlanguages{R} % Load R syntax for listings, for a list of other languages supported see: ftp://ftp.tex.ac.uk/tex-archive/macros/latex/contrib/listings/listings.pdf
+\lstset{language=R, % Use R in this example
+        frame=single, % Single frame around code
+        basicstyle=\small\ttfamily, % Use small true type font
+        keywordstyle=[1]\color{Blue}, % Perl functions bold and blue
+        keywordstyle=[2]\color{Purple}, % Perl function arguments purple
+        keywordstyle=[3]\color{Blue}\underbar, % Custom functions underlined and blue
+        identifierstyle=, % Nothing special about identifiers                                         
+        commentstyle=\usefont{T1}{pcr}{m}{sl}\color{MyDarkGreen}\small, % Comments small dark green courier font
+        stringstyle=\color{Purple}, % Strings are purple
+        showstringspaces=false, % Don't put marks in string spaces
+        tabsize=4, % 5 spaces per tab
+        %
+        % Put standard Perl functions not included in the default language here
+        morekeywords={rand},
+        %
+        % Put Perl function parameters here
+        morekeywords=[2]{on, off, interp},
+        %
+        % Put user defined functions here
+        morekeywords=[3]{test},
+       	%
+        morecomment=[l][\color{Blue}]{...}, % Line continuation (...) like blue comment
+        numbers=left, % Line numbers on left
+        firstnumber=1, % Line numbers start with line 1
+        numberstyle=\tiny\color{Blue}, % Line numbers are blue and small
+        stepnumber=5 % Line numbers go in steps of 5
+}
+
+% Creates a new command to include a perl script, the first parameter is the filename of the script (without .pl), the second parameter is the caption
+\newcommand{\rscript}[2]{
+\begin{itemize}
+\item[]\lstinputlisting[caption=#2,label=#1]{#1.r}
+\end{itemize}
+}
+
+%----------------------------------------------------------------------------------------
+%	DOCUMENT STRUCTURE COMMANDS
+%	Skip this unless you know what you're doing
+%----------------------------------------------------------------------------------------
+
+% Header and footer for when a page split occurs within a problem environment
+\newcommand{\enterProblemHeader}[1]{
+\nobreak\extramarks{#1}{#1 continued on next page\ldots}\nobreak
+\nobreak\extramarks{#1 (continued)}{#1 continued on next page\ldots}\nobreak
+}
+
+% Header and footer for when a page split occurs between problem environments
+\newcommand{\exitProblemHeader}[1]{
+\nobreak\extramarks{#1 (continued)}{#1 continued on next page\ldots}\nobreak
+\nobreak\extramarks{#1}{}\nobreak
+}
+
+\setcounter{secnumdepth}{0} % Removes default section numbers
+\newcounter{homeworkProblemCounter} % Creates a counter to keep track of the number of problems
+
+\newcommand{\homeworkProblemName}{}
+\newenvironment{homeworkProblem}[1][Problem \arabic{homeworkProblemCounter}]{ % Makes a new environment called homeworkProblem which takes 1 argument (custom name) but the default is "Problem #"
+\stepcounter{homeworkProblemCounter} % Increase counter for number of problems
+\renewcommand{\homeworkProblemName}{#1} % Assign \homeworkProblemName the name of the problem
+\section{\homeworkProblemName} % Make a section in the document with the custom problem count
+\enterProblemHeader{\homeworkProblemName} % Header and footer within the environment
+}{
+\exitProblemHeader{\homeworkProblemName} % Header and footer after the environment
+}
+
+\newcommand{\problemAnswer}[1]{ % Defines the problem answer command with the content as the only argument
+\noindent\framebox[\columnwidth][c]{\begin{minipage}{0.98\columnwidth}#1\end{minipage}} % Makes the box around the problem answer and puts the content inside
+}
+
+\newcommand{\homeworkSectionName}{}
+\newenvironment{homeworkSection}[1]{ % New environment for sections within homework problems, takes 1 argument - the name of the section
+\renewcommand{\homeworkSectionName}{#1} % Assign \homeworkSectionName to the name of the section from the environment argument
+\subsection{\homeworkSectionName} % Make a subsection with the custom name of the subsection
+\enterProblemHeader{\homeworkProblemName\ [\homeworkSectionName]} % Header and footer within the environment
+}{
+\enterProblemHeader{\homeworkProblemName} % Header and footer after the environment
+}
+
+%----------------------------------------------------------------------------------------
+%	NAME AND CLASS SECTION
+%----------------------------------------------------------------------------------------
+
+\newcommand{\hmwkTitle}{Exercises 3 - Better Online Learning (Preliminaries)} % Assignment title
+\newcommand{\hmwkDueDate}{\today} % Due date
+\newcommand{\hmwkClass}{SDS\ 385} % Course/class
+\newcommand{\hmwkClassTime}{} % Class/lecture time
+\newcommand{\hmwkClassInstructor}{Professor Scott} % Teacher/lecturer
+\newcommand{\hmwkAuthorName}{Spencer Woody} % Your name
+
+\newcommand{\yhat}{\hat{y}}
+\newcommand{\E}{\text{E}}
+
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\title{
+\vspace{2in}
+\textmd{\textbf{\hmwkClass:\ \hmwkTitle}}\\
+\normalsize\vspace{0.1in}\small{\hmwkDueDate}\\
+\vspace{0.1in}\large{\textit{\hmwkClassInstructor\ }}
+\vspace{3in}
+}
+
+\author{\textbf{\hmwkAuthorName}}
+\date{} % Insert date here if you want it to appear below your name
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\maketitle
+
+\newpage
+
+%----------------------------------------------------------------------------------------
+%	PROBLEM 1
+%----------------------------------------------------------------------------------------
+
+% To have just one problem per page, simply put a \clearpage after each problem
+
+\begin{homeworkProblem}
+\begin{enumerate}[(A)]
+	%
+	%
+	%
+	\item %%%%%%%%%%%%%% A
+	Let's frame our iterative solution to the minimization problem. 
+	%
+	%
+	% general iterative statement
+	\begin{align}
+		\beta_{k+1} = \beta_k + \alpha_k p_k,
+	\end{align}
+	%
+	%
+	%
+	where $\alpha_k$ is the \emph{step length} and $p_k$ is the \emph{descent direction} such that 
+	%
+	%
+	%
+	\begin{align}
+		p_k = -B_k^{-1} \nabla \ell(\beta_k). \label{eqn}
+	\end{align}
+	%
+	%
+	%
+	$B_k$ is some symmetric, nonsingular matrix. In the case of gradient descent it is simply the identity matrix, and in the case of (exact) Newton's method, it is the Hessian matrix. 
+	
+	To make reasonable progress in reducing likelihood, our step length must meet \emph{Wolfe's conditions}, of which there are two: \\ 
+	%
+	%
+	%
+	
+	\textbf{Sufficient decrease, (a.k.a. Armijo's condition)}
+	\begin{align}
+		\ell(\beta_k + \alpha_k p_k) \leq \ell(\beta_k) + c_1 \alpha_k \nabla \ell(\beta_k)^T p_k \text{, and}
+	\end{align}
+	%
+	%
+	%
+	\textbf{Curvature condition}
+	\begin{align}
+		\nabla \ell(\beta_k + \alpha_k p_k)^T p_k \geq c_2 \nabla \ell_k^T p_k.
+	\end{align}
+	Here, $c_1 \in (0, 1)$, $c_2 \in (0, 1)$, and $c_1 < c_2$. $c_1$ should be quite small. The Armijo condition ensures that we are indeed reducing the likelihood function. However, any fittingly small step size will meet this condition, so we also impose the curvature condition, which guarantees that we reduce the likelihood by moving the step length in a steep enough direction. In practice, we can start with a high value of $\alpha$, and then reduce it by some factor until it meets the Armijo condition. Then we do not need the curvature condition. 
+	
+	%
+	%
+	%
+	\begin{algorithm}[H]
+	 \textbf{Choose} $\alpha_{max} > 0$, $\rho \in (0,1)$, $c \in(0, 1)$ \;
+	 \KwResult{Return optimal $\alpha_k$}
+	 $\alpha_k \leftarrow \alpha_{max}$ \;
+	 armijo.condition $\leftarrow$ ( $ \ell(\beta_k + \alpha_k p_k) \leq \ell(\beta_k) + c_1 \alpha_k \nabla \ell(\beta_k)^T p_k  $ ) {\# Boolean value} \;
+	 \While{NOT armijo.condition}{
+	  $\alpha_k \leftarrow \rho \alpha_k$\;
+	  armijo.condition $\leftarrow$ ( $ \ell(x_k + \alpha_k p_k) \leq \ell(\beta_k) + c \alpha_k \nabla \ell(\beta_k)^T p_k  $ )\;
+	 }
+	 \textbf{Return} $\alpha_k$
+	 \caption{Backtracking line search}
+	\end{algorithm}
+	%
+	%
+	%
+	%
+	\item %%%%%%%%%%%%%% B
+	See Problem 2, part (B) for a discussion of the performance of backtracking line search as applied to the same data set from the previous two problem sets.
+	%
+	%
+	%
+	%
+\end{enumerate}
+\end{homeworkProblem}
+
+
+%----------------------------------------------------------------------------------------
+%	PROBLEM 2
+%----------------------------------------------------------------------------------------
+
+\pagebreak
+
+\begin{homeworkProblem}
+\begin{enumerate}[(A)]
+	%
+	%
+	%
+	\item %%%%%%%%%%%%%% A
+	The quasi-Newton method is used to approximate the Hessian matrix so as to perform an analogue to the Newton method. From Taylor's Theorem, we have it that 
+	%
+	%
+	%
+	\begin{align}
+		\nabla^2 \ell(\beta_{k+1} - \beta) \approx \nabla \ell(\beta_{k+1}) - \nabla \ell(\beta_{k}).
+	\end{align}
+	From the equation above, to approximate the Hessian matrix we impose the \emph{secant condition}, i.e.,
+	\begin{align}
+		B_{k+1}s_k = y_k
+	\end{align}
+	where $s_k = \beta_{k+1} - \beta_{k} $ and $y_k = \nabla \ell_{k+1} - \nabla \ell_{k} $. This ensures that our approximate Hessian matrix mimics the Taylor approximation characteristic of the true Hessian. Any approximation of the Hessian matrix should meet this criteria, as well as preserve symmetry. The Broyden-Fletcher-Goldfard-Shanno (BFGS) method for finding the Hessian fits both these critera. In this exercise, we use the BFGS method for finding the approximate \emph{inverse} Hessian, $H_{k+1}$, so that we do not need to invert it later on to apply the analogue to Newton's method. Then we can find the direction using Eqn. (\ref{eqn}) and using $B_k^{-1} = H_k$. The formula for approximating the inverse Hessian, taken from Nocedal \& Wright page 25, is
+	\begin{align}
+		H_{k+1} = (I - \rho_k s_k y_k^T) H_k (I - \rho_k y_k s_k^T) + \rho_k s_k s_k^T\text{, } \rho_k = \frac{1}{y_k^Ts_k}.
+	\end{align}
+	
+	\begin{algorithm}[H]
+	 \textbf{Choose} line search parameters, initial $\beta$ values, number of iterations ($num.iter$) \;
+	 \KwResult{BFGS quasi-Newton estimates of $\beta$} 
+	 Initialize $H_1 = I_{p}$ \;
+	 Initialize $\nabla \ell_1$ from initial $\beta$ \;
+	 \For{$k = 1$ \KwTo $num.iter$}{
+	 Store $\ell_k$ \;
+	 $p_k \leftarrow -H_k \nabla \ell_k$ \; 
+	 Obtain $\alpha_k$ from line search function \;
+	 $\beta_{k+1} = \beta_k + \alpha_k p_k $ \;
+	 $\nabla \ell_{k+1} = \nabla \ell (\beta_{k+1})$ \;
+	 $y_k \leftarrow \nabla \ell_{k+1} - \nabla \ell_{k}$ \;
+	 $s_k \leftarrow \beta_{k+1} - \beta_k$ \;
+	 Compute $H_{k+1}$ using BFGS formula \;
+	 	\uIf{convergence criteria reached}{
+			%Delete excess \;
+			\textbf{break}\;
+		}
+	 }
+	 %
+	 %
+	 %
+	 
+	 \textbf{Return} $\beta$ estimate matrix
+	 \caption{BFGS inverse Hessian method}
+	\end{algorithm}
+	%
+	%
+	%
+	%
+	\item %%%%%%%%%%%%%% B
+	
+	Our initial guess for $\beta$, $\hat{\beta}_0$ is some distance from the result of $\beta$ from Newton's method. That distance is 5 plus some noise from the $\text{Exp}(1)$ distribution in either the positive or negative direction.
+	
+	For the line-search algorithm, we set $c = 0.001$, $\alpha_{max} = 1, \rho = 0.5$. We initialize the approximation of the inverse Hessian matrix with the identity matrix. 
+	
+	Log-likelihood results from our optimation techniques are shown in Figure \ref{complik}. A dot is put on each line on the point at which convergence is determined to be reached. There were 18,430 iterations for gradient descent, 4,651 iterations for gradient descent with line search (a 75\% reduction compared to regular GD), and just 1,438 iterations for quasi-Newton method with line search (a 92\% reduction compared to regular GD). Our heuristic for reaching convergence is a reduction in log-likelihood of less than $10^{-7}$. Clearly, quasi-Newton requires far, far fewer iterations to reach convergence. It is a middle ground between gradient descent and Newton's method, which only required fewer than 10 iterations to converge. However, in quasi-Newton, we do not need to invert any matrices, and therefore this approach is more numerically stable and less computationally expensive. This is the major trade-off between Newton and quasi-Newton.
+	
+	Interestingly, the log-likelihood for gradient descent with a fixed step size decreases far faster than the other two methods, and even the log-likelihood for gradient descent with line search falls much faster than that for quasi-Newton. This is perhaps because, with quasi-Newton, our initial guess for the inverse Hessian is the identity matrix, which is likely very far from the truth. It takes a few iterations for our approximation to line up reasonably well with the truth.  
+	
+	\begin{figure}[htp!]
+		\centering
+		\includegraphics[scale=0.7]{complikplot.pdf}
+		\caption{Comparative log-likelihood plots for gradient descent, gradient descent with line search, and quasi-Newton method with line search}
+		\label{complik}
+	\end{figure}
+	%
+	%
+	%
+	%
+\end{enumerate}
+\end{homeworkProblem}
+
+
+
+
+
+%%----------------------------------------------------------------------------------------
+%%	LIST CODE
+%%----------------------------------------------------------------------------------------
+
+\pagebreak
+R script \texttt{linesearch.R}
+\lstinputlisting[language=R]{linesearch.R}
+
+\pagebreak
+R script for \texttt{exercises03.R}
+\lstinputlisting[language=R]{exercises03.R}
+
+%----------------------------------------------------------------------------------------
+
+\end{document}
