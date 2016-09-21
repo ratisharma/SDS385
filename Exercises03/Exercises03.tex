@@ -219,10 +219,10 @@
 	 \textbf{Choose} $\alpha_{max} > 0$, $\rho \in (0,1)$, $c \in(0, 1)$ \;
 	 \KwResult{Return optimal $\alpha_k$}
 	 $\alpha_k \leftarrow \alpha_{max}$ \;
-	 armijo.condition $\leftarrow$ ( $ \ell(\beta_k + \alpha_k p_k) \leq \ell(\beta_k) + c_1 \alpha_k \nabla \ell(\beta_k)^T p_k  $ ) {\# Boolean value} \;
+	 armijo.condition $\leftarrow$ ( $ \ell(\beta_k + \alpha_k p_k) \leq \ell(\beta_k) + c \alpha_k \nabla \ell(\beta_k)^T p_k  $ ) {\# Boolean value} \;
 	 \While{NOT armijo.condition}{
 	  $\alpha_k \leftarrow \rho \alpha_k$\;
-	  armijo.condition $\leftarrow$ ( $ \ell(x_k + \alpha_k p_k) \leq \ell(\beta_k) + c \alpha_k \nabla \ell(\beta_k)^T p_k  $ )\;
+	  armijo.condition $\leftarrow$ ( $ \ell(\beta_k + \alpha_k p_k) \leq \ell(\beta_k) + c \alpha_k \nabla \ell(\beta_k)^T p_k  $ )\;
 	 }
 	 \textbf{Return} $\alpha_k$
 	 \caption{Backtracking line search}
@@ -273,7 +273,7 @@
 	 \textbf{Choose} line search parameters, initial $\beta$ values, number of iterations ($num.iter$) \;
 	 \KwResult{BFGS quasi-Newton estimates of $\beta$} 
 	 Initialize $H_1 = I_{p}$ \;
-	 Initialize $\nabla \ell_1$ from initial $\beta$ \;
+	 Initialize $\nabla \ell_1$ from initial $\beta_1$ \;
 	 \For{$k = 1$ \KwTo $num.iter$}{
 	 Store $\ell_k$ \;
 	 $p_k \leftarrow -H_k \nabla \ell_k$ \; 
