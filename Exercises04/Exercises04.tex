@@ -1,0 +1,306 @@
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass{article}
+
+\usepackage{fancyhdr} % Required for custom headers
+\usepackage{lastpage} % Required to determine the last page for the footer
+\usepackage{extramarks} % Required for headers and footers
+\usepackage[usenames,dvipsnames]{color} % Required for custom colors
+\usepackage{graphicx} % Required to insert images
+\usepackage{amsmath}
+\usepackage{listings} % Required for insertion of code
+\usepackage[]{algorithm2e}
+%\usepackage{couriernew} % Required for the courier font
+
+\usepackage{enumerate} % Required for enumerating with letters
+
+
+\usepackage{mathpazo}
+% Palatino
+\usepackage{avant}
+\usepackage{inconsolata}
+
+
+
+% Margins
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+
+\linespread{1.1} % Line spacing
+
+% Set up the header and footer
+\pagestyle{fancy}
+\lhead{\hmwkAuthorName} % Top left header
+\chead{\hmwkClass\ : \hmwkTitle} % Top center head
+\rhead{} % Top right header
+\lfoot{\lastxmark} % Bottom left footer
+\cfoot{} % Bottom center footer
+\rfoot{Page\ \thepage\ of\ \protect\pageref{LastPage}} % Bottom right footer
+\renewcommand\headrulewidth{0.4pt} % Size of the header rule
+\renewcommand\footrulewidth{0.4pt} % Size of the footer rule
+
+\setlength\parindent{0pt} % Removes all indentation from paragraphs
+
+%----------------------------------------------------------------------------------------
+%	CODE INCLUSION CONFIGURATION
+%----------------------------------------------------------------------------------------
+
+\definecolor{MyDarkGreen}{rgb}{0.0,0.4,0.0} % This is the color used for comments
+\lstloadlanguages{R, [Visual]C++} % Load R syntax for listings, for a list of other languages supported see: ftp://ftp.tex.ac.uk/tex-archive/macros/latex/contrib/listings/listings.pdf
+\lstset{language=R, % Use R in this example
+        frame=single, % Single frame around code
+        basicstyle=\small\ttfamily, % Use small true type font
+        keywordstyle=[1]\color{Blue}, % Perl functions bold and blue
+        keywordstyle=[2]\color{Purple}, % Perl function arguments purple
+        keywordstyle=[3]\color{Blue}\underbar, % Custom functions underlined and blue
+        identifierstyle=, % Nothing special about identifiers                                         
+        commentstyle=\usefont{T1}{pcr}{m}{sl}\color{MyDarkGreen}\small, % Comments small dark green courier font
+        stringstyle=\color{Purple}, % Strings are purple
+        showstringspaces=false, % Don't put marks in string spaces
+        tabsize=4, % 5 spaces per tab
+        %
+        % Put standard Perl functions not included in the default language here
+        morekeywords={rand},
+        %
+        % Put Perl function parameters here
+        morekeywords=[2]{on, off, interp},
+        %
+        % Put user defined functions here
+        morekeywords=[3]{test},
+       	%
+        morecomment=[l][\color{Blue}]{...}, % Line continuation (...) like blue comment
+        numbers=left, % Line numbers on left
+        firstnumber=1, % Line numbers start with line 1
+        numberstyle=\tiny\color{Blue}, % Line numbers are blue and small
+        stepnumber=5 % Line numbers go in steps of 5
+}
+
+
+%\definecolor{MyDarkGreen}{rgb}{0.0,0.4,0.0} % This is the color used for comments
+%\lstloadlanguages{C++} % Load R syntax for listings, for a list of other languages supported see: http://texdoc.net/texmf-dist/doc/latex/listings/listings.pdf
+\lstset{language=C++
+}
+
+% Creates a new command to include a perl script, the first parameter is the filename of the script (without .pl), the second parameter is the caption
+\newcommand{\rscript}[2]{
+\begin{itemize}
+\item[]\lstinputlisting[caption=#2,label=#1]{#1.r}
+\end{itemize}
+}
+
+%----------------------------------------------------------------------------------------
+%	DOCUMENT STRUCTURE COMMANDS
+%	Skip this unless you know what you're doing
+%----------------------------------------------------------------------------------------
+
+% Header and footer for when a page split occurs within a problem environment
+\newcommand{\enterProblemHeader}[1]{
+\nobreak\extramarks{#1}{#1 continued on next page\ldots}\nobreak
+\nobreak\extramarks{#1 (continued)}{#1 continued on next page\ldots}\nobreak
+}
+
+% Header and footer for when a page split occurs between problem environments
+\newcommand{\exitProblemHeader}[1]{
+\nobreak\extramarks{#1 (continued)}{#1 continued on next page\ldots}\nobreak
+\nobreak\extramarks{#1}{}\nobreak
+}
+
+\setcounter{secnumdepth}{0} % Removes default section numbers
+\newcounter{homeworkProblemCounter} % Creates a counter to keep track of the number of problems
+
+\newcommand{\homeworkProblemName}{}
+\newenvironment{homeworkProblem}[1][Problem \arabic{homeworkProblemCounter}]{ % Makes a new environment called homeworkProblem which takes 1 argument (custom name) but the default is "Problem #"
+\stepcounter{homeworkProblemCounter} % Increase counter for number of problems
+\renewcommand{\homeworkProblemName}{#1} % Assign \homeworkProblemName the name of the problem
+\section{\homeworkProblemName} % Make a section in the document with the custom problem count
+\enterProblemHeader{\homeworkProblemName} % Header and footer within the environment
+}{
+\exitProblemHeader{\homeworkProblemName} % Header and footer after the environment
+}
+
+\newcommand{\problemAnswer}[1]{ % Defines the problem answer command with the content as the only argument
+\noindent\framebox[\columnwidth][c]{\begin{minipage}{0.98\columnwidth}#1\end{minipage}} % Makes the box around the problem answer and puts the content inside
+}
+
+\newcommand{\homeworkSectionName}{}
+\newenvironment{homeworkSection}[1]{ % New environment for sections within homework problems, takes 1 argument - the name of the section
+\renewcommand{\homeworkSectionName}{#1} % Assign \homeworkSectionName to the name of the section from the environment argument
+\subsection{\homeworkSectionName} % Make a subsection with the custom name of the subsection
+\enterProblemHeader{\homeworkProblemName\ [\homeworkSectionName]} % Header and footer within the environment
+}{
+\enterProblemHeader{\homeworkProblemName} % Header and footer after the environment
+}
+
+%----------------------------------------------------------------------------------------
+%	NAME AND CLASS SECTION
+%----------------------------------------------------------------------------------------
+
+\newcommand{\hmwkTitle}{Exercises 4 - Better Online Learning} % Assignment title
+\newcommand{\hmwkDueDate}{\today} % Due date
+\newcommand{\hmwkClass}{SDS\ 385} % Course/class
+\newcommand{\hmwkClassTime}{} % Class/lecture time
+\newcommand{\hmwkClassInstructor}{Professor Scott} % Teacher/lecturer
+\newcommand{\hmwkAuthorName}{Spencer Woody} % Your name
+
+\newcommand{\yhat}{\hat{y}}
+\newcommand{\E}{\text{E}}
+
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\title{
+\vspace{2in}
+\textmd{\textbf{\hmwkClass:\ \hmwkTitle}}\\
+\normalsize\vspace{0.1in}\small{\hmwkDueDate}\\
+\vspace{0.1in}\large{\textit{\hmwkClassInstructor\ }}
+\vspace{3in}
+}
+
+\author{\textbf{\hmwkAuthorName}}
+\date{} % Insert date here if you want it to appear below your name
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\maketitle
+
+\newpage
+
+%----------------------------------------------------------------------------------------
+%	PROBLEM 1
+%----------------------------------------------------------------------------------------
+
+% To have just one problem per page, simply put a \clearpage after each problem
+
+My implementation of SGD with AdaGrad for detecting malicious URLs in web traffic utilizes both \textsf{R} and \textsf{C++}. \textsf{R} is used for reading in the data, calling the function for SGD, plotting, and performing cross validation, while \textsf{C++} is used to export a function to \textsf{R}. The \textsf{Rcpp} library is used to bridge \textsf{C++} and \textsf{R}, and the \textsf{Eigen} library is used in \textsf{C++} to perform matrix algebra observation. My code in \textsf{C++} takes in the data, a default stepsize, an $\ell^2$ (ridge) penalization parameter, and a number of times to parse through the data. It returns an intercept term, the estimated coefficients of the covariates, and a trace plot of the exponential moving average (EMA) of the negative binomial likelihood. Instead of sampling an observation randomly, I just sweep through the entire dataset in one epoch at a time, i.e., reading every observation sequentially. \\
+
+There are three loops contained within my \textsf{C++} code. The outermost loop is for each epoch, in which all the data is passed through once. The next loop loops through all the columns (observations) of the $X$ feature matrix. The innermost loop parses through only the \emph{active} features of $X$ for a given observation. This is how the sparsity of the $X$ feature matrix is leveraged. It takes my computer (a 2014 MacBook Air with 1.6 GHz Intel Core i5 processor) about 25 seconds to run on this whole dataset. \\
+
+The intercept term in ridge regression is not penalized, so my code updates it for every observation without penalty.\\
+
+Because the innermost loop only parses through active features, there will be many times that a specific coefficient $\beta_j$ will be passed over, but even though these intermediate steps are skipped, there is still a penalization of $\beta_j$ for every iteration. Therefore, in order to keep leverage over the sparse nature of the feature matrix we must utilize \emph{lazy updating} whereby we approximate the ridge penalization accumulated over the length of consecutive iterations when $\beta_j$ is passed over. \\ 
+
+To see why this is neccessary, let's take a closer look at ridge regression, where we optimize the objective function
+%
+%
+%
+	\begin{align}
+		\tilde{l}(\beta) &= l(\beta) + \frac{1}{2}\lambda ||\beta||_2^2,
+	\end{align}
+	%
+	%
+	%
+	where $l(\beta) = -X^T(y - mw)$ is the binomial negative log likelihood. The gradient of this objective function is
+	%
+	%
+	%
+	\begin{align}
+		\nabla \tilde{l}(\beta) &= \nabla l(\beta) + \lambda \beta
+	\end{align}
+	%
+	%
+	%
+	Our vector of coefficients $\beta$ is updated at each step as follows
+	\begin{align}
+		\beta^{(k+1)}  &= \beta^{(k)} - \gamma^{(k)} \nabla \tilde{l}(\beta^{(k)}) \\
+		&= \beta^{(k)} - \gamma^{(k)} \left ( \nabla l(\beta^{(k)}) + \lambda \beta^{(k)} \right).
+	\end{align}
+	%
+	%
+	%
+	Element-wise this may be written as 
+	%
+	%
+	%
+	\begin{align}
+		\beta^{(k+1)}_j &= \beta^{(k)}_j - \gamma_j^{(k)} \left ( \nabla l(\beta^{(k)})_j + \lambda \beta^{(k)}_j \right),
+	\end{align}
+	where
+	%
+	%
+	%
+	\begin{align}
+		\gamma_j^{(k)} &= \frac{\eta}{\sqrt{G_j}} \nabla \tilde{l}(\beta^{(k)})_j,
+	\end{align}
+	%
+	%
+	%
+	and $G_j$ is the sum of squares of historical $j$th components of gradients and $\eta$ is the default (first) AdaGrad step size. Whenever the $j$th feature of a given obersvation is zero, when the innermost loop of my code passes over it, the gradient at that feature is zero and the update is now
+	%
+	%
+	%
+	\begin{align}
+		\beta^{(k+1)}_j &= \beta^{(k)}_j - \gamma_j^{(k)} \lambda \beta^{(k)}_j = \left ( 1 - \gamma_j^{(k)} \lambda \right ) \beta^{(k)}_j 
+	\end{align}
+	%
+	%
+	%
+	% and \gamma_j^{(k)} will remain constant over these steps because the historical sum of squares of gradients is constant.
+	Suppose there are $m$ times that we skip the $j$th feature. We will need to subtract from $\beta_j$ the accumulated penalties which are incurred before updating the cofficient as usual. The lazy update is
+%
+%
+%
+\begin{align}
+	\beta^\Delta_j = \sum_{i = 1}^{m}  (1 + \gamma_j^{(k)} \lambda) ^ {i+1} \beta^{(k)}_j = \frac{1 - \left( 1 + \gamma_j^{(k)} \lambda \right )}{1 - \gamma_j^{(k)} \lambda}
+\end{align}
+%
+%
+%
+where $k$ is the previous iteration during which $\beta_j$ was updated.
+%
+%
+%
+Once we touch $\beta_j$ again, we first subtract this acc
+Figures \ref{nll0} and \ref{nll1} show traceplots. Both plots converge, suggesting that a global minimum is reached.
+
+\begin{figure}[htp!]
+	\centering
+	\includegraphics[scale = 0.5]{nlltrace0.png}
+	\caption{Traceplot of EMA of negative log likelihood for no penalization} \label{nll0}
+\end{figure}
+
+\begin{figure}[htp!]
+	\centering
+	\includegraphics[scale = 0.5]{nlltrace1.png}
+	\caption{Traceplot of EMA of negative log likelihood for penalization with $\lambda$ = 0.01} \label{nll1}
+\end{figure}
+
+Finally, I use cross-validations to tune the penalization parameter $\lambda$. I ran five-fold cross-validation in R, which was slow to predict the testing data because of the matrix operations needed to be done, so I ran cross-validation on a select series of values for the parameter. Figure \ref{table1} below compares results of cross validation across varying values of $\lambda$. Sensitivity is the true positive rate for predicting out-of-sample outcomes, specificity is the true negative rate, and accuracy is the total proportion of outcomes predicted successfully. Without penalization, the model has pretty impressive predictive power, with all three measures above 0.99. Even a small penalty like $10^{-6}$ reduces predictive power. 
+
+\begin{figure}
+	\centering
+    \begin{tabular}{l|l|l|l}
+    $\lambda$  & Sensitivity & Specificity & Accuracy  \\ \hline
+    0         & 0.9901595   & 0.9934549   & 0.9923656 \\
+    $10^{-6}$ & 0.9897778   & 0.9936025   & 0.9923385 \\
+    $10^{-4}$ & 0.9888078   & 0.9930379   & 0.9916390 \\
+    $10^{-2}$ & 0.9726841   & 0.9922197   & 0.9857616 \\
+    \end{tabular}
+	\caption{Five-fold cross-validation results for out-of-sample prediction} \label{table1}
+\end{figure}
+
+
+
+%%----------------------------------------------------------------------------------------
+%%	LIST CODE
+%%----------------------------------------------------------------------------------------
+
+\pagebreak
+R script \texttt{e4.R}
+\lstinputlisting[language=R]{fastsgd.R}
+
+\pagebreak
+R script \texttt{e4.cpp}
+\lstinputlisting[language=C++]{fastsgdridge.cpp}
+
+%----------------------------------------------------------------------------------------
+
+\end{document}
