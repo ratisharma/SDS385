@@ -7,7 +7,7 @@
 Example of Rmd
 ==============
 
-$latex $\\sum\_{i=1}^n X\_i$ $
+$\\sum\_{i=1}^n X\_i$
 
 This is an R Markdown document. Markdown is a simple formatting syntax
 for authoring HTML, PDF, and MS Word documents. For more details on
