@@ -1,0 +1,621 @@
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass{article}
+
+\usepackage{fancyhdr} % Required for custom headers
+\usepackage{lastpage} % Required to determine the last page for the footer
+\usepackage{extramarks} % Required for headers and footers
+\usepackage[usenames,dvipsnames]{color} % Required for custom colors
+\usepackage{graphicx} % Required to insert images
+\usepackage{amsmath}
+\usepackage{listings} % Required for insertion of code
+\usepackage[]{algorithm2e}
+%\usepackage{couriernew} % Required for the courier font
+
+\usepackage{enumerate} % Required for enumerating with letters
+
+\usepackage{mathpazo}
+% Palatino
+\usepackage{avant}
+\usepackage{inconsolata}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\sign}{sign}
+\DeclareMathOperator*{\prox}{prox}
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+
+% Margins
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+
+\linespread{1.1} % Line spacing
+
+% Set up the header and footer
+\pagestyle{fancy}
+\lhead{\hmwkAuthorName} % Top left header
+\chead{\hmwkClass\ : \hmwkTitle} % Top center head
+\rhead{} % Top right header
+\lfoot{\lastxmark} % Bottom left footer
+\cfoot{} % Bottom center footer
+\rfoot{Page\ \thepage\ of\ \protect\pageref{LastPage}} % Bottom right footer
+\renewcommand\headrulewidth{0.4pt} % Size of the header rule
+\renewcommand\footrulewidth{0.4pt} % Size of the footer rule
+
+\setlength\parindent{0pt} % Removes all indentation from paragraphs
+
+%----------------------------------------------------------------------------------------
+%	CODE INCLUSION CONFIGURATION
+%----------------------------------------------------------------------------------------
+
+\definecolor{MyDarkGreen}{rgb}{0.0,0.4,0.0} % This is the color used for comments
+\lstloadlanguages{R} % Load R syntax for listings, for a list of other languages supported see: ftp://ftp.tex.ac.uk/tex-archive/macros/latex/contrib/listings/listings.pdf
+\lstset{language=R, % Use R in this example
+        frame=single, % Single frame around code
+        basicstyle=\small\ttfamily, % Use small true type font
+        keywordstyle=[1]\color{Blue}, % Perl functions bold and blue
+        keywordstyle=[2]\color{Purple}, % Perl function arguments purple
+        keywordstyle=[3]\color{Blue}\underbar, % Custom functions underlined and blue
+        identifierstyle=, % Nothing special about identifiers                                         
+        commentstyle=\usefont{T1}{pcr}{m}{sl}\color{MyDarkGreen}\small, % Comments small dark green courier font
+        stringstyle=\color{Purple}, % Strings are purple
+        showstringspaces=false, % Don't put marks in string spaces
+        tabsize=4, % 5 spaces per tab
+        %
+        % Put standard Perl functions not included in the default language here
+        morekeywords={rand},
+        %
+        % Put Perl function parameters here
+        morekeywords=[2]{on, off, interp},
+        %
+        % Put user defined functions here
+        morekeywords=[3]{test},
+       	%
+        morecomment=[l][\color{Blue}]{...}, % Line continuation (...) like blue comment
+        numbers=left, % Line numbers on left
+        firstnumber=1, % Line numbers start with line 1
+        numberstyle=\tiny\color{Blue}, % Line numbers are blue and small
+        stepnumber=5 % Line numbers go in steps of 5
+}
+
+% Creates a new command to include a perl script, the first parameter is the filename of the script (without .pl), the second parameter is the caption
+\newcommand{\rscript}[2]{
+\begin{itemize}
+\item[]\lstinputlisting[caption=#2,label=#1]{#1.r}
+\end{itemize}
+}
+
+%----------------------------------------------------------------------------------------
+%	DOCUMENT STRUCTURE COMMANDS
+%	Skip this unless you know what you're doing
+%----------------------------------------------------------------------------------------
+
+% Header and footer for when a page split occurs within a problem environment
+\newcommand{\enterProblemHeader}[1]{
+\nobreak\extramarks{#1}{#1 continued on next page\ldots}\nobreak
+\nobreak\extramarks{#1 (continued)}{#1 continued on next page\ldots}\nobreak
+}
+
+% Header and footer for when a page split occurs between problem environments
+\newcommand{\exitProblemHeader}[1]{
+\nobreak\extramarks{#1 (continued)}{#1 continued on next page\ldots}\nobreak
+\nobreak\extramarks{#1}{}\nobreak
+}
+
+\setcounter{secnumdepth}{0} % Removes default section numbers
+\newcounter{homeworkProblemCounter} % Creates a counter to keep track of the number of problems
+
+\newcommand{\homeworkProblemName}{}
+\newenvironment{homeworkProblem}[1][Problem \arabic{homeworkProblemCounter}]{ % Makes a new environment called homeworkProblem which takes 1 argument (custom name) but the default is "Problem #"
+\stepcounter{homeworkProblemCounter} % Increase counter for number of problems
+\renewcommand{\homeworkProblemName}{#1} % Assign \homeworkProblemName the name of the problem
+\section{\homeworkProblemName} % Make a section in the document with the custom problem count
+\enterProblemHeader{\homeworkProblemName} % Header and footer within the environment
+}{
+\exitProblemHeader{\homeworkProblemName} % Header and footer after the environment
+}
+
+\newcommand{\problemAnswer}[1]{ % Defines the problem answer command with the content as the only argument
+\noindent\framebox[\columnwidth][c]{\begin{minipage}{0.98\columnwidth}#1\end{minipage}} % Makes the box around the problem answer and puts the content inside
+}
+
+\newcommand{\homeworkSectionName}{}
+\newenvironment{homeworkSection}[1]{ % New environment for sections within homework problems, takes 1 argument - the name of the section
+\renewcommand{\homeworkSectionName}{#1} % Assign \homeworkSectionName to the name of the section from the environment argument
+\subsection{\homeworkSectionName} % Make a subsection with the custom name of the subsection
+\enterProblemHeader{\homeworkProblemName\ [\homeworkSectionName]} % Header and footer within the environment
+}{
+\enterProblemHeader{\homeworkProblemName} % Header and footer after the environment
+}
+
+%----------------------------------------------------------------------------------------
+%	NAME AND CLASS SECTION
+%----------------------------------------------------------------------------------------
+
+\newcommand{\hmwkTitle}{Exercises 7 - Alternating Direction Method of Multipliers (ADMM) for Lasso} % Assignment title
+\newcommand{\hmwkDueDate}{\today} % Due date
+\newcommand{\hmwkClass}{SDS\ 385} % Course/class
+\newcommand{\hmwkClassTime}{} % Class/lecture time
+\newcommand{\hmwkClassInstructor}{Professor Scott} % Teacher/lecturer
+\newcommand{\hmwkAuthorName}{Spencer Woody} % Your name
+
+\newcommand{\yhat}{\hat{y}}
+\newcommand{\E}{\text{E}}
+
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\title{
+\vspace{2in}
+\textmd{\textbf{\hmwkClass:\ \hmwkTitle}}\\
+\normalsize\vspace{0.1in}\small{\hmwkDueDate}\\
+\vspace{0.1in}\large{\textit{\hmwkClassInstructor\ }}
+\vspace{3in}
+}
+
+\author{\textbf{\hmwkAuthorName}}
+\date{} % Insert date here if you want it to appear below your name
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\maketitle
+
+\newpage
+
+%----------------------------------------------------------------------------------------
+%	PROBLEM 1
+%----------------------------------------------------------------------------------------
+
+% To have just one problem per page, simply put a \clearpage after each problem
+
+\begin{homeworkProblem}
+\large
+\textbf{ADMM}
+\normalsize
+
+We use ADMM to form Lasso estimates. Let $A$ be our feature matrix, and $x$ is our coefficient vector, and $b$ is the response vector. 
+
+\begin{align}
+	\min &\frac{1}{2} \norm{Ax - b}^2_2 + \lambda \norm{z}_1 \\
+	\text{s.t. } &x - z = 0
+\end{align}
+%
+%
+%
+The Lagrangian is 
+%
+%
+%
+\begin{align}
+	L_p(x, z, u) &= \frac{1}{2} \norm{Ax - b}^2_2 + \lambda \norm{z}_1 + u^T(x-z) + \frac{\rho}{2} \norm{x - z}^2_2.
+\end{align}
+%
+%
+%
+\begin{align}
+	x^{k+1} &= \argmin_x L_p(x, z^k, u^k) \\
+	&= \argmin_x \left\{ \frac{1}{2} \norm{Ax - b}^2_2 + \lambda \norm{z^k}_1 + (u^k)^T(x-z) + \frac{\rho}{2} \norm{x - z^k}^2_2 \right\}
+\end{align}
+%
+%
+%
+We take the gradient of the objective function with respect to $x$ and set it equal to 0,
+%
+%
+%
+\begin{align}
+	\nabla_x L_p(x, z, u) &= A^T(Ax^{k+1} - b) + u^k + \rho(x^{k+1} - z^k) \\
+	&= (A^TA + \rho I)x^{k+1} - (A^Tb + \rho z^k - u^k) = 0 \\
+	x^{k+1} &= (A^TA + \rho I)^{-1} (A^Tb + \rho z^k - u^k) \text{,  let } v^k = u^k / \rho\\
+	x^{k+1} &= (A^TA + \rho I)^{-1} (A^Tb + \rho (z^k - v^k))
+\end{align}
+%
+%
+%
+\begin{align}
+	z^{k+1} &= \argmin_z L_p(x^{k+1}, z, u^k) \\
+	&= \argmin_z \left\{ \frac{1}{2} \norm{Ax^{k+1} - b}^2_2 + \lambda \norm{z}_1 + (u^k)^T(x^{k+1}-z) + \frac{\rho}{2} \norm{x^{k+1} - z}^2_2 \right\} \\
+	&= \argmin_z \left\{ \frac{\lambda}{\rho} \norm{z}_1 + (v^k)^T(x^{k+1}-z) + \frac{1}{2} \norm{x^{k+1} - z}^2_2 \right\} \\
+	&= \argmin_z \left\{ \frac{\lambda}{\rho} \norm{z}_1 - (z - x^{k+1})^Tv^k + \frac{1}{2} \norm{z - x^{k+1}}^2_2 \right\} \\
+	&= \prox_{\gamma = 1} \frac{\lambda}{\rho} \norm{w^k}\text{ ,  }w^k = x^{k+1} + v^k
+\end{align}
+%
+%
+%
+So $z^{k+1}$ is subjected to the soft threshholding from the previous two exercises. Finally we update $u^k$, and, identically, $v^k$.
+%
+%
+%
+\begin{align}
+	u^{k+1} &= u^k + \rho(x^{k+1} - z^{k+1}) \\
+	\rho v^{k+1} &= \rho v^k + \rho(x^{k+1} - z^{k+1}) \\
+	v^{k+1} &= v^k + x^{k+1} - z^{k+1} 
+\end{align}
+%
+%
+%
+With $\lambda =  0.002420476$, the regular proximal gradient method takes 5887 iterations, the accelerated proximal gradient method takes 626 iterations, and the ADMM takes 146 iterations. See Figure \ref{fig:compplot}.
+%
+%
+%
+\begin{figure}[htbp]
+	\centering
+		\includegraphics[scale=0.75]{compplot.pdf}
+	\caption{Comparison of convergence for different methods}
+	\label{fig:compplot}
+\end{figure}
+%
+%
+%
+%
+\end{homeworkProblem}
+
+
+
+%----------------------------------------------------------------------------------------
+%	PROBLEM 1
+%----------------------------------------------------------------------------------------
+
+% To have just one problem per page, simply put a \clearpage after each problem
+
+\begin{homeworkProblem}
+\large
+\textbf{Proximal Operators}
+\normalsize
+\begin{enumerate}[(A)]
+	%
+	%
+	%
+	\item %%%%%%%%%%%%%% A
+	%
+	%
+	%
+	First, we state the definition of the Moreau envelope and the proximal gradient: 
+	%
+	%
+	%
+	\begin{align}
+		E_\gamma f(x) &= \min_z \left \{ f(z) + \frac{1}{2\gamma} \norm{z-x}_2^2  \right \} \leq f(x) \\
+		\prox_\gamma f(x) &= \argmin_z \left \{ f(z) + \frac{1}{2\gamma} \norm{z-x}_2^2  \right \}
+	\end{align}
+	%
+	For the local linear approximation of $f(x)$ about the point $x_0$,
+	%
+	%
+	%
+	\begin{align}
+		f(x) \approx \hat{f}(x;x_0) &= f(x_0) + (x - x_0)^{T}\nabla f(x_0)
+	\end{align}
+	%
+	%
+	%
+	the proximal operator is derived as follows:
+	\begin{align}
+		\prox_\gamma \hat{f}(x;x_0) &= \argmin_x \left \{ f(x_0) + (x - x_0)^T\nabla f(x_0) + \frac{1}{2\gamma} \norm{x-x_0}_2^2  \right \} \\
+		&= \argmin_x \left \{ x^T \nabla f(x_0) + \frac{1}{2\gamma} \norm{x-x_0}_2^2  \right \}
+	\end{align}
+	%
+	%
+	%
+	We take the gradient of the objective function with respect to the feature vector $x$ and set it to zero to find the $\argmin$.
+	\begin{align}
+		\nabla f(x_0) - \frac{1}{\gamma}(x-x_0) &= 0 \\
+		x &= x_0 + \gamma \nabla f(x_0)
+	\end{align}
+	%
+	%
+	%
+	This is equivalent to gradient-step for $f(x)$ with size $\gamma$.
+	%
+	%
+	%
+	\item % B
+	%
+	%
+	%
+	Suppose we have a negative log-likelihood in the form 
+	%
+	%
+	%
+	\begin{align}
+		l(x) &= \frac{1}{2}x^T P x - q^T x + r. \label{genlik}
+	\end{align}
+	%
+	%
+	%
+	The proximal operator with parameter $1 / \gamma$ of $l(x)$ is 
+	%
+	%
+	%
+	\begin{align}
+		\prox_{1 / \gamma} l(x) &= \argmin_z \left \{ l(z) + \frac{\gamma}{2} \norm{z-x}_2^2 \right \} \\
+		&= \argmin_z \left \{ \frac{1}{2}z^T P z - q^T z + r + \frac{\gamma}{2} \norm{z-x}_2^2 \right \}
+	\end{align}
+	%
+	%
+	%
+	Once again, taking the gradient of the objective function with respect to $z$ and setting it to zero yields
+	%
+	%
+	%
+	\begin{align}
+		Pz - q + \gamma(z - x) &= 0 \\
+		(P + \gamma I)z &= (\gamma x + q) \\
+		z &= (P + \gamma T)^{-1}(\gamma x + q)
+	\end{align}
+	%
+	%
+	%
+	where $I$ is the identity matrix, assuming that $(P +\gamma I)$ is invertible. Now suppose that $y$ are generated conditionally on $x$ by $(y|x) \sim N(Ax, \Omega^{-1})$. The log-likelihood of $x$ may be expressed by 
+	%
+	%
+	%
+	\begin{align}
+		l(x) &\propto \frac{1}{2}(y - Ax)^T \Omega (y - Ax) \\
+		&= \frac{1}{2}(y^T - x^TA^T)\Omega (y - Ax) \\
+		&= \frac{1}{2}(y^T\Omega - x^TA^T\Omega)(y - Ax)\\
+		&= \frac{1}{2}(y^T\Omega y - y^T\Omega Ax - x^TA^T\Omega y + x^TA^T\Omega Ax) \\
+		&= \frac{1}{2}(y^T\Omega y - 2 y^T\Omega Ax + x^TA^T\Omega Ax) \\
+		&= \frac{1}{2}x^TA^T\Omega Ax - y^T\Omega Ax + y^T\Omega y 
+	\end{align}
+	Therefore the negative log-likelihood takes the form expressed in (\ref{genlik}) with $P = A^T\Omega A$, $q = A^T \Omega^T y$, and $r = y^T \Omega y$.
+	%
+	%
+	%
+	\item
+	Let $\phi(x) = \tau \norm{x}_1$.
+	%
+	%
+	%
+	\begin{align}
+		\prox_{\gamma} \phi(x) &= \argmin_z \left \{ \phi(x) + \frac{1}{2\gamma} \norm{z-x}_2^2 \right \} \\
+		&= \argmin_z \left \{ \tau\norm{z}_1 + \frac{1}{2\gamma} \norm{z-x}_2^2 \right \} \\
+		&= \argmin_z \left \{ \tau \sum_{i = 1}^p |z_i| + \frac{1}{2\gamma} \norm{z-x}_2^2 \right \}
+	\end{align}
+	%
+	%
+	%
+	We find the element-wise solution to find each $z_i$.
+	%
+	%
+	%
+	\begin{align}
+		\argmin_{z_i} \left \{ \tau |z_i| + \frac{1}{2\gamma} (z_i-x_i)^2 \right \} = \argmin_{z_i} \left \{ \frac{1}{2} (x_i - z_i)^2 + \gamma \tau |z_i|  \right \}
+	\end{align}
+	%
+	%
+	%
+	In the previous set of exercises, we showed that this is equal to the soft-thresholding function 
+	%
+	%
+	%
+	\begin{align}
+		\text{sign}(x_i)(|x_i| - \gamma\tau)_+.
+	\end{align}
+	%
+	%
+	%
+	\end{enumerate}
+\end{homeworkProblem}
+
+
+
+
+
+%----------------------------------------------------------------------------------------
+%	PROBLEM 2
+%----------------------------------------------------------------------------------------
+
+\pagebreak
+
+\begin{homeworkProblem}
+\large
+\textbf{The proximal gradient method}
+\normalsize
+\begin{enumerate}[(A)]
+	%
+	%
+	%
+	\item %%%%%%%%%%%%%% A
+	%
+	%
+	%
+	We want to minimize an objective function $f(x) = l(x) + \phi(x)$ where $l(x)$ is differentiable but $\psi(x)$ is not. We define the linear approximator of $l(x)$ as 
+	%
+	%
+	%
+	\begin{align}
+		l(x) \approx \tilde{l}(x;x_0) = l(x_0) + (x - x_0)^{T} \nabla l(x_0) + \frac{1}{2\gamma}\norm{x - x_0}^2_2.
+	\end{align}
+	%
+	%
+	%
+	Now our original objective function can be approximated with 
+	%
+	%
+	%
+	\begin{align}
+		f(x) \approx \tilde{f}(x;x_0) = \tilde{l}(x;x_0) + \phi(x).
+	\end{align}
+	%
+	%
+	%
+	We look to minimize this approximation of the objective function.
+	%
+	%
+	%
+	\begin{align}
+		\hat{x} &= \argmin_x \left \{ \tilde{f}(x;x_0) \right \} \\
+		&= \argmin_x \left \{ \tilde{l}(x;x_0) + \phi(x) \right \} \\
+		&= \argmin_x \left \{ l(x_0) + (x - x_0)^{T} \nabla l(x_0) + \frac{1}{2\gamma}\norm{x - x_0}^2_2 + \phi(x) \right \} \label{myloss}
+		%&= \argmin_x \left \{x^{(t)} \nabla l(x_0) + \frac{1}{2\gamma}\norm{x - x_0}^2_2 + \phi(x) \right \}
+	\end{align}
+	%
+	%
+	%
+	We can disregard the $l(x_0)$ term in (\ref{myloss}) because it does not relate to $x$. Furthermore we can introduce another term $\frac{\gamma}{2}\nabla l(x_0)^T \nabla l(x_0)$ which also does not relate to $x$ in order to complete the square. Now the ojective function becomes %We will first minimize the term .
+	%
+	%
+	%
+	\begin{align}
+		&\argmin_x \left \{ \phi(x) + (x - x_0)^{T} \nabla l(x_0) + \frac{1}{2\gamma}\norm{x - x_0}^2_2 + \frac{\gamma}{2}\nabla l(x_0)^T\nabla l(x_0) \right \} \\
+		=&\argmin_x \left \{ \phi(x) + (x - x_0)^{T} \nabla l(x_0) + \frac{1}{2\gamma}(x - x_0)^{T}(x - x_0) + \frac{\gamma}{2}\nabla l(x_0)^T \nabla l(x_0)\right \} \\
+		=& \argmin_x \left \{ \phi(x) + \frac{1}{2\gamma} \left( 2\gamma (x - x_0)^{T} \nabla l(x_0) + (x - x_0)^{T}(x - x_0) + \gamma^2 \nabla l(x_0)^T \nabla l(x_0)\right) \right \} \\
+		=& \argmin_x \left \{ \phi(x) + \frac{1}{2\gamma} \left(  (x - x_0)^{T}(x - x_0) + 2\gamma (x - x_0)^{T} \nabla l(x_0) + \gamma^2 \nabla l(x_0)^T \nabla l(x_0)\right) \right \} \\
+		=& \argmin_x \left \{ \phi(x) + \frac{1}{2\gamma}  (x - x_0 + \gamma \nabla l(x_0))^{T}(x - x_0 + \gamma \nabla l(x_0)) \right \} \\
+		=& \argmin_x \left \{ \phi(x) + \frac{1}{2\gamma}  \norm{x - x_0 + \gamma \nabla l(x_0)}_2^2  \right \} \\
+		=& \argmin_x \left \{ \phi(x) + \frac{1}{2\gamma}  \norm{x - (x_0 - \gamma \nabla l(x_0))}_2^2  \right \}
+	\end{align}
+	%
+	%
+	%
+	Therefore we see the solution for $\hat{x}$ is equivalent to
+	%
+	%
+	%
+	\begin{align}
+		\hat{x} = \prox_\gamma \phi(u) \text{, where } u = x_{0} - \gamma \nabla l (x_0)
+	\end{align}
+	%
+	%
+	%
+	\item % B
+	%
+	%
+	%
+	The proximal gradient method is an iterative algorithm which expressed as 
+	%
+	%
+	%
+	\begin{align}
+		x^{(t+1)} = \prox_{\gamma^{(t)}}\phi(u^{(t)}),\;\; u^{(t)} = x^{(t)} - \gamma^{(t)} \nabla l(x^{(t)})
+	\end{align}
+	%
+	%
+	%
+	With lasso linear regression, we find 
+	%
+	%
+	%
+	\begin{align}
+		\hat{\beta} = \argmin_{\beta} \left \{ \frac{1}{2} \norm{y - X\beta}^2_2 + \lambda \norm{\beta}_1 \right \}.
+	\end{align}
+	We may use proximal gradient method to accomplish this. Define 
+	%
+	%
+	%
+	\begin{align}
+		l(\beta) &= \frac{1}{2}\norm{y - X\beta}^2_2 = \frac{1}{2}(y - X\beta)^T (y - X\beta) = \frac{1}{2}y^Ty - \beta^T X^T y + \frac{1}{2} \beta^T X^T X \beta \\
+		\nabla l(\beta) &= X^T X \beta -  X^T y = -X^T(y - X\beta) \\
+		\phi(\beta) &= \lambda \norm{\beta}_1.
+	\end{align}
+	%
+	%
+	%
+	With this we can frame our proximal gradient method for finding lasso solutions as follows:
+	%
+	%
+	%
+	\begin{align}
+		\beta^{(t+1)} &= \prox_{\gamma^{(t)}} \lambda \norm{u^{(t)}}_1 \\
+		u^{(t)} &= \beta^{(t)} - \gamma^{(t)} \nabla l(\beta^{(t)}) \\
+		&= \beta^{(t)} + \gamma^{(t)} X^T(y - X\beta^{(t)})
+	\end{align}
+	%
+	%
+	%
+	Using the results from the previous exercise, we see that the element-wise solution is 
+	%
+	%
+	%
+	\begin{align}
+		\beta^{(t+1)}_i &= \sign(u_i^{(t)})(|u_i^{(t)}| - \gamma \lambda)_+ %\\
+		%&=  \sign(\beta_i^{(t)} + \gamma^{(t)} X^T(y - X\beta_i^{(t)}))(|\beta_i^{(t)} + \gamma^{(t)} X^T(y - X\beta^{(t)}_i)| - \gamma \lambda)_+
+		%&= \sign(\beta^{(t)}_i - \gamma^{(t)} \nabla l(\beta^{(t)})_i)(|\beta^{(t)}_i - \gamma^{(t)} \nabla l(\beta^{(t)})_i| - \gamma \lambda)_+
+	\end{align}
+	%
+	%
+	%
+	The primary computational cost of this algorithm computing the two matrix products. Finding the proximal gradient is trivial, only involving the \texttt{sign} and \texttt{max} commands within \textsf{R}. Implementation in R gives similar results to the output of the \texttt{glmnet} package. See Figure \ref{compplots}. Note that in my code, I scale $\lambda$ by $N$, the number of data points. 
+	%
+	%
+	%
+	\begin{figure}[htp!]
+		\centering
+%		\includegraphics[scale=0.4]{myplot.pdf}%
+%		\includegraphics[scale=0.4]{glmnetplot.pdf}
+		\caption{Comparison of output from my proximal gradient method (left) and output of \texttt{glmnet} (right)} \label{compplots}
+	\end{figure}
+	%
+	%
+	%
+	\item % C
+	%
+	%
+	%
+	Now we implement the accelerated proximal gradient algorithm. The $z^{(t+1)}$ term is an extropolated version of $\beta^{(t+1)}$ based on the magnitude of the previous step. If we have taken a big step, we are more confident in going further in the direction we have gone. 
+	\begin{align}
+		\beta^{(t+1)} &= \prox_{\gamma^{(t)}} \lambda \norm{u^{(t)}}_1 \\
+		u^{(t)} &= z^{(t)} - \gamma^{(t)} \nabla l(z^{(t)}) \\
+		s^{(t+1)} &= \frac{1+(1+4(s^{(t)}))^{1/2}}{2} \\
+		z^{(t+1)} &= \beta^{(t+1)} + \left ( \frac{s^{(t)} - 1}{s^{(t+1)}} \right ) \left ( \beta^{(t+1)} - \beta^{(t)} \right)
+	\end{align}
+	%
+	%
+	%
+	When implemented in \textsf{R}, the accelerated method converges much faster than the regular method. See Figure \ref{slowfast}. My convergence criteria is a relative change in negative log-likelihood of less than $10^{-10}$. Holding $\lambda = 0.001$, the accelerated method converges in 616 iterations, while the regular method converges in 19,953 iterations. Comparing the final given values of the coefficients, 63 of 64 covariates have the same sign for their coefficients. The one outstanding covariate, \texttt{hdl.tch}, has a coefficient of 0.00267 in the unaccelerated method, and a value of zero in the accelerated method. Figure \ref{compcoefs} compares all coefficients for the two methods. Clearly the coefficients are in close agreement when computed under the two different methods.
+	%
+	%
+	%
+	\begin{figure}[htbp!]
+		\centering
+%		\includegraphics[scale=0.6]{slowfast.pdf}
+		\caption{Comparison of convergence for prox method vs. accelerated prox method, $\lambda = 0.001$} \label{slowfast}
+	\end{figure}
+	%
+	%
+	%
+	\begin{figure}[htbp!]
+		\centering
+%		\includegraphics[scale=0.6]{compcoefs.pdf}
+		\caption{Comparison of coefficients for prox method vs. accelerated prox method, $\lambda = 0.001$} \label{compcoefs}
+	\end{figure}
+	%
+	\begin{figure}[htbp!]
+		\centering
+%		\includegraphics[scale=0.4]{splot.pdf}
+		\caption{Convergence of $\frac{s^{(t)} - 1}{s^{(t+1)}}$} \label{splot}
+	\end{figure}
+	%
+	%
+	%
+\end{enumerate}
+\end{homeworkProblem}
+
+
+%%----------------------------------------------------------------------------------------
+
+% \pagebreak
+% R script \texttt{linesearch.R}
+% \lstinputlisting[language=R]{linesearch.R}
+%
+\pagebreak
+\textsf{R} script for \texttt{myfuns.R}
+%\lstinputlisting[language=R]{myfuns.R}
+
+\pagebreak
+\textsf{R} script for \texttt{e6.R}
+%\lstinputlisting[language=R]{e6.R}
+
+%----------------------------------------------------------------------------------------
+
+\end{document}
