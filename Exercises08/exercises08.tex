@@ -1,0 +1,307 @@
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass{article}
+
+\usepackage{fancyhdr} % Required for custom headers
+\usepackage{lastpage} % Required to determine the last page for the footer
+\usepackage{extramarks} % Required for headers and footers
+\usepackage[usenames,dvipsnames]{color} % Required for custom colors
+\usepackage{graphicx} % Required to insert images
+\usepackage{amsmath}
+\usepackage{listings} % Required for insertion of code
+\usepackage[]{algorithm2e}
+%\usepackage{couriernew} % Required for the courier font
+
+\usepackage{enumerate} % Required for enumerating with letters
+
+\usepackage{mathpazo}
+% Palatino
+\usepackage{avant}
+\usepackage{inconsolata}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\sign}{sign}
+\DeclareMathOperator*{\prox}{prox}
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+
+% Margins
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in
+
+\linespread{1.1} % Line spacing
+
+% Set up the header and footer
+\pagestyle{fancy}
+\lhead{\hmwkAuthorName} % Top left header
+\chead{\hmwkClass\ : \hmwkTitle} % Top center head
+\rhead{} % Top right header
+\lfoot{\lastxmark} % Bottom left footer
+\cfoot{} % Bottom center footer
+\rfoot{Page\ \thepage\ of\ \protect\pageref{LastPage}} % Bottom right footer
+\renewcommand\headrulewidth{0.4pt} % Size of the header rule
+\renewcommand\footrulewidth{0.4pt} % Size of the footer rule
+
+\setlength\parindent{0pt} % Removes all indentation from paragraphs
+
+%----------------------------------------------------------------------------------------
+%	CODE INCLUSION CONFIGURATION
+%----------------------------------------------------------------------------------------
+
+\definecolor{MyDarkGreen}{rgb}{0.0,0.4,0.0} % This is the color used for comments
+\lstloadlanguages{R} % Load R syntax for listings, for a list of other languages supported see: ftp://ftp.tex.ac.uk/tex-archive/macros/latex/contrib/listings/listings.pdf
+\lstset{language=R, % Use R in this example
+        frame=single, % Single frame around code
+        basicstyle=\small\ttfamily, % Use small true type font
+        keywordstyle=[1]\color{Blue}, % Perl functions bold and blue
+        keywordstyle=[2]\color{Purple}, % Perl function arguments purple
+        keywordstyle=[3]\color{Blue}\underbar, % Custom functions underlined and blue
+        identifierstyle=, % Nothing special about identifiers                                         
+        commentstyle=\usefont{T1}{pcr}{m}{sl}\color{MyDarkGreen}\small, % Comments small dark green courier font
+        stringstyle=\color{Purple}, % Strings are purple
+        showstringspaces=false, % Don't put marks in string spaces
+        tabsize=4, % 5 spaces per tab
+        %
+        % Put standard Perl functions not included in the default language here
+        morekeywords={rand},
+        %
+        % Put Perl function parameters here
+        morekeywords=[2]{on, off, interp},
+        %
+        % Put user defined functions here
+        morekeywords=[3]{test},
+       	%
+        morecomment=[l][\color{Blue}]{...}, % Line continuation (...) like blue comment
+        numbers=left, % Line numbers on left
+        firstnumber=1, % Line numbers start with line 1
+        numberstyle=\tiny\color{Blue}, % Line numbers are blue and small
+        stepnumber=5 % Line numbers go in steps of 5
+}
+
+% Creates a new command to include a perl script, the first parameter is the filename of the script (without .pl), the second parameter is the caption
+\newcommand{\rscript}[2]{
+\begin{itemize}
+\item[]\lstinputlisting[caption=#2,label=#1]{#1.r}
+\end{itemize}
+}
+
+%----------------------------------------------------------------------------------------
+%	DOCUMENT STRUCTURE COMMANDS
+%	Skip this unless you know what you're doing
+%----------------------------------------------------------------------------------------
+
+% Header and footer for when a page split occurs within a problem environment
+\newcommand{\enterProblemHeader}[1]{
+\nobreak\extramarks{#1}{#1 continued on next page\ldots}\nobreak
+\nobreak\extramarks{#1 (continued)}{#1 continued on next page\ldots}\nobreak
+}
+
+% Header and footer for when a page split occurs between problem environments
+\newcommand{\exitProblemHeader}[1]{
+\nobreak\extramarks{#1 (continued)}{#1 continued on next page\ldots}\nobreak
+\nobreak\extramarks{#1}{}\nobreak
+}
+
+\setcounter{secnumdepth}{0} % Removes default section numbers
+\newcounter{homeworkProblemCounter} % Creates a counter to keep track of the number of problems
+
+\newcommand{\homeworkProblemName}{}
+\newenvironment{homeworkProblem}[1][Problem \arabic{homeworkProblemCounter}]{ % Makes a new environment called homeworkProblem which takes 1 argument (custom name) but the default is "Problem #"
+\stepcounter{homeworkProblemCounter} % Increase counter for number of problems
+\renewcommand{\homeworkProblemName}{#1} % Assign \homeworkProblemName the name of the problem
+\section{\homeworkProblemName} % Make a section in the document with the custom problem count
+\enterProblemHeader{\homeworkProblemName} % Header and footer within the environment
+}{
+\exitProblemHeader{\homeworkProblemName} % Header and footer after the environment
+}
+
+\newcommand{\problemAnswer}[1]{ % Defines the problem answer command with the content as the only argument
+\noindent\framebox[\columnwidth][c]{\begin{minipage}{0.98\columnwidth}#1\end{minipage}} % Makes the box around the problem answer and puts the content inside
+}
+
+\newcommand{\homeworkSectionName}{}
+\newenvironment{homeworkSection}[1]{ % New environment for sections within homework problems, takes 1 argument - the name of the section
+\renewcommand{\homeworkSectionName}{#1} % Assign \homeworkSectionName to the name of the section from the environment argument
+\subsection{\homeworkSectionName} % Make a subsection with the custom name of the subsection
+\enterProblemHeader{\homeworkProblemName\ [\homeworkSectionName]} % Header and footer within the environment
+}{
+\enterProblemHeader{\homeworkProblemName} % Header and footer after the environment
+}
+
+%----------------------------------------------------------------------------------------
+%	NAME AND CLASS SECTION
+%----------------------------------------------------------------------------------------
+
+\newcommand{\hmwkTitle}{Exercises 8 - Spacial smoothing at scale} % Assignment title
+\newcommand{\hmwkDueDate}{\today} % Due date
+\newcommand{\hmwkClass}{SDS\ 385} % Course/class
+\newcommand{\hmwkClassTime}{} % Class/lecture time
+\newcommand{\hmwkClassInstructor}{Professor Scott} % Teacher/lecturer
+\newcommand{\hmwkAuthorName}{Spencer Woody} % Your name
+
+\newcommand{\yhat}{\hat{y}}
+\newcommand{\E}{\text{E}}
+
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+\title{
+\vspace{2in}
+\textmd{\textbf{\hmwkClass:\ \hmwkTitle}}\\
+\normalsize\vspace{0.1in}\small{\hmwkDueDate}\\
+\vspace{0.1in}\large{\textit{\hmwkClassInstructor\ }}
+\vspace{3in}
+}
+
+\author{\textbf{\hmwkAuthorName}}
+\date{} % Insert date here if you want it to appear below your name
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\maketitle
+
+\newpage
+
+
+%----------------------------------------------------------------------------------------
+%	PROBLEM 1
+%----------------------------------------------------------------------------------------
+
+\begin{homeworkProblem}
+\large
+\textbf{Laplacian smoothing}
+\normalsize
+
+Normalsize text
+
+\end{homeworkProblem}
+
+%----------------------------------------------------------------------------------------
+%	PROBLEM 2
+%----------------------------------------------------------------------------------------
+
+\begin{homeworkProblem}
+\large
+\textbf{Graph fused lasso}
+\normalsize
+
+Normalsize text
+
+\end{homeworkProblem}
+
+%----------------------------------------------------------------------------------------
+%	PROBLEM 3
+%----------------------------------------------------------------------------------------
+
+% To have just one problem per page, simply put a \clearpage after each problem
+
+\begin{homeworkProblem}
+\large
+\textbf{ADMM}
+\normalsize
+
+We use ADMM to form Lasso estimates. Let $A$ be our feature matrix, and $x$ is our coefficient vector, and $b$ is the response vector. 
+
+\begin{align}
+	\min &\frac{1}{2} \norm{Ax - b}^2_2 + \lambda \norm{z}_1 \\
+	\text{s.t. } &x - z = 0
+\end{align}
+%
+%
+%
+The Lagrangian is 
+%
+%
+%
+\begin{align}
+	L_p(x, z, u) &= \frac{1}{2} \norm{Ax - b}^2_2 + \lambda \norm{z}_1 + u^T(x-z) + \frac{\rho}{2} \norm{x - z}^2_2.
+\end{align}
+%
+%
+%
+\begin{align}
+	x^{k+1} &= \argmin_x L_p(x, z^k, u^k) \\
+	&= \argmin_x \left\{ \frac{1}{2} \norm{Ax - b}^2_2 + \lambda \norm{z^k}_1 + (u^k)^T(x-z) + \frac{\rho}{2} \norm{x - z^k}^2_2 \right\}
+\end{align}
+%
+%
+%
+We take the gradient of the objective function with respect to $x$ and set it equal to 0,
+%
+%
+%
+\begin{align}
+	\nabla_x L_p(x, z, u) &= A^T(Ax^{k+1} - b) + u^k + \rho(x^{k+1} - z^k) \\
+	&= (A^TA + \rho I)x^{k+1} - (A^Tb + \rho z^k - u^k) = 0 \\
+	x^{k+1} &= (A^TA + \rho I)^{-1} (A^Tb + \rho z^k - u^k) \text{,  let } v^k = u^k / \rho\\
+	x^{k+1} &= (A^TA + \rho I)^{-1} (A^Tb + \rho (z^k - v^k))
+\end{align}
+%
+%
+%
+\begin{align}
+	z^{k+1} &= \argmin_z L_p(x^{k+1}, z, u^k) \\
+	&= \argmin_z \left\{ \frac{1}{2} \norm{Ax^{k+1} - b}^2_2 + \lambda \norm{z}_1 + (u^k)^T(x^{k+1}-z) + \frac{\rho}{2} \norm{x^{k+1} - z}^2_2 \right\} \\
+	&= \argmin_z \left\{ \frac{\lambda}{\rho} \norm{z}_1 + (v^k)^T(x^{k+1}-z) + \frac{1}{2} \norm{x^{k+1} - z}^2_2 \right\} \\
+	&= \argmin_z \left\{ \frac{\lambda}{\rho} \norm{z}_1 - (z - x^{k+1})^Tv^k + \frac{1}{2} \norm{z - x^{k+1}}^2_2 \right\} \\
+	&= \prox_{\gamma = 1} \frac{\lambda}{\rho} \norm{w^k}\text{ ,  }w^k = x^{k+1} + v^k
+\end{align}
+%
+%
+%
+So $z^{k+1}$ is subjected to the soft threshholding from the previous two exercises. Finally we update $u^k$, and, identically, $v^k$.
+%
+%
+%
+\begin{align}
+	u^{k+1} &= u^k + \rho(x^{k+1} - z^{k+1}) \\
+	\rho v^{k+1} &= \rho v^k + \rho(x^{k+1} - z^{k+1}) \\
+	v^{k+1} &= v^k + x^{k+1} - z^{k+1} 
+\end{align}
+%
+%
+%
+With $\lambda =  0.002420476$, the regular proximal gradient method takes 5887 iterations, the accelerated proximal gradient method takes 626 iterations, and the ADMM takes 146 iterations. See Figure \ref{fig:compplot}.
+%
+%
+%
+\begin{figure}[htbp]
+	\centering
+%		\includegraphics[scale=0.75]{compplot.pdf}
+	\caption{Comparison of convergence for different methods}
+	\label{fig:compplot}
+\end{figure}
+%
+%
+%
+%
+\end{homeworkProblem}
+
+
+
+%%----------------------------------------------------------------------------------------
+
+% \pagebreak
+% R script \texttt{linesearch.R}
+% \lstinputlisting[language=R]{linesearch.R}
+%
+\pagebreak
+\textsf{R} script for \texttt{myfuns.R}
+%\lstinputlisting[language=R]{myfuns.R}
+
+\pagebreak
+\textsf{R} script for \texttt{e6.R}
+%\lstinputlisting[language=R]{e6.R}
+
+%----------------------------------------------------------------------------------------
+
+\end{document}
