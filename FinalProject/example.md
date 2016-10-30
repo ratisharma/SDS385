@@ -7,6 +7,8 @@
 Example of Rmd
 ==============
 
+![equation](http://www.sciweavers.org/upload/Tex2Img_1477801112/eqn.png)
+
 $\\sum\_{i=1}^n X\_i$
 
 This is an R Markdown document. Markdown is a simple formatting syntax
