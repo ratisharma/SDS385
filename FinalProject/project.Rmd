@@ -1,0 +1,1177 @@
+---
+title: "Replication of Methods in Houser et al. (2015) using R"
+author: 
+- name: Spencer Woody
+  affiliation: The University of Texas at Austin
+date: December 5, 2016
+abstract: |
+  Here I replicate the methods used in by Houser et al. in their 2015 paper, ["Controlled Measurement and Comparative Analysis of Cellular Components in *E. Coli* Reveals Broad Regulatory Changes in Response to Glucose Starvation,"](http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1004400) [1] in which the authors investigate the gene expression response of *E. coli* to starvation conditions by monitoring levels of RNA and protein abundances over time. In their original computational analysis, which is available on the [Marcotte lab github page](https://github.com/marcottelab/AG3C_starvation_tc), they use Python with the SciPy library. As an alternative, I offer a walkthrough of the same methods and production of visualizations using the statistical programming language R, which offers several advantages over Python, including a more forgiving learning curve and beautiful, easily produced graphics using the `ggplot2` package. In addtion, I provide some commentary on the viability of their methods.
+
+  This is my final project for the fall 2016 class SDS 385: Statistical Models for Big Data taught by Professor James Scott at the University of Texas at Austin. 
+output: 
+  html_document:
+    toc: true
+    toc_depth: 4
+    toc_float: 
+      collapsed: false
+    theme: flatly
+    highlight: textmate
+header-includes:
+- \usepackage{amsmath}
+- \usepackage{setspace}
+- \usepackage{avant}
+- \usepackage{mathpazo}
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+opts_chunk$set(dev = 'pdf')
+options(warn=-1)
+```
+
+## Introduction
+
+In their paper, Houser et al. investigate the how *Escherichia coli* respond to starvation conditions by taking genome-wide reads of RNA and protein abundances over the span of two weeks. By analyzing the changes in these abundances, we may understand the physiological response of *E. coli* to starvation conditions on a global level and across multiple cellular subsystems, an important goal of systems biology.
+
+Here are the five procedures from the paper I seek to reproduce:
+
+1. Processing the data
+
+2. Clustering by k-means of profiles of all RNAs and all proteins to compare global uniformity of regulation 
+
+3. Calculating correlations between proteins and their transcripts across time to understand post-translational regulation of proteins
+
+4. Calculating pair-wise correlations between RNAs and proteins in the same operon, and
+
+5. Functional analysis of up- and down-regulated RNAs and proteins to understand physiological response. 
+
+## The Data
+
+Three biological replicates of *E. coli* were grown in a glucose-limited environment for two weeks, and RNA and protein abundances were measured from samples at 9 time points (3, 4, 5, 6, 8, 24, 48, 24\*7 = 168, and 24\*14 = 336 hours). RNA levels were determined through RNA-seq, and protein levels were determined from "shotgun" mass spectrometry. I will leave the details of the experimental methods to the original paper. The result, however, is an impressive depth of coverage, in which there are about 4400 unique RNAs and 3700 unique proteins observed, each associated with a gene.
+
+The raw counts of RNAs and proteins must be normalized in order to compare them on the same relative scale. 
+
+ * RNA data for every time point are scaled by a factor determined from  [DESeq](http://bioconductor.org/packages/release/bioc/html/DESeq.html), which uses a model based on the negative binomial distribution to test for differential expression between the 3 hour mark and each time point thereafter. This yields a scaling factor for each time point after the 3h mark, and also a list of RNAs which change significantly at at least one time point. Those deemed insignificant are removed from the dataset. The average and standard deviation across all replicates is calculated. Each individual RNA (row) is divided by its maximum presence in order to put each observation on the same scaled of 0-1.
+ * Proteins with a maximum read of less than 10 across all three replicates and nine time points are removed. Then, each time point is divided by its respective read depth, the total number of proteins counted at that time point, (i.e., the column sum). Finally, each indiviual protein (row) is divided by its maximum count to put each observation on the scale of 0-1, and the average and standard deviation across all replicates at each time point for every protein is found.
+
+### Normalizing RNA counts
+
+First we read in the raw RNA data. The `as.is` argument preserves strings instead of converting them to factors. We can look at how many RNAs there are in the file and what the data look like. Each row is an RNA associated with a specific gene. The first column (`gene_id`) contains the gene IDs for the RNA. The next nine columns of the data (`t3_1`, `t4_1`, etc.) represent the counts across the nine time points for the first replicate, the next nine represent the counts for all the time points for the second replicates, and ditto the third set of nine columns.
+
+```{r}
+rna <- read.csv("Data/rna.csv", header = TRUE, as.is = TRUE)
+nrow(rna)
+head(rna)
+```
+
+We'll store the names later for us to refer to later.
+
+```{r}
+rna_names <- rna[, 1]
+```
+
+Now read in the scaling size factors determined from DESeq. The script for performing DESeq may be found in the `DESeq` folder on my github page.
+
+```{r}
+ssf <- read.csv("Data/ssf.csv", header = T)
+ssf
+ssf <- unlist(ssf[1, 2:ncol(ssf)])
+ssf
+```
+
+We will divide each time point of each replicate by the appropriate scale factor with the `sweep` command
+
+```{r}
+rna_norm <- sweep(as.matrix(rna[, -1]), 2, ssf, `/`)
+rna_norm[1, ]
+```
+
+Find average and standard deviation over all time periods, and then normalize each row by its maximum in order to make them relative counts.
+
+```{r}
+rna_norm_av <- matrix(rep(0, nrow(rna) * 9), nrow = nrow(rna))
+rna_norm_sd <- matrix(rep(0, nrow(rna) * 9), nrow = nrow(rna))
+
+for (t in 1:9) {
+	rna_norm_t <- rna_norm[, c(t, t + 9, t + 18)]
+	rna_norm_av[, t] <- apply(rna_norm_t, 1, mean)
+	rna_norm_sd[, t] <- apply(rna_norm_t, 1, sd)
+}
+
+rna_norm_av_max <- apply(rna_norm_av, 1, max)
+
+rna_norm_av <- sweep(rna_norm_av, 1, rna_norm_av_max, '/') 
+rna_norm_sd <- sweep(rna_norm_sd, 1, rna_norm_av_max, '/') 
+
+head(rna_norm_av)
+```
+
+Now we will create a dataframe for our data, combining it with the names we saved before and adding on column names for each time point. Finally, we omit any missing values and save them to a csv file we can load later. 
+
+```{r}
+rna_norm_av <- data.frame(rna_names, rna_norm_av)
+colnames(rna_norm_av) <- c("gene_id", "t3", "t4", "t5", "t6", 
+						   "t8", "t24", "t48", "t168", "t336")
+						   
+rna_norm_sd <- data.frame(rna_names, rna_norm_sd)
+colnames(rna_norm_sd) <- colnames(rna_norm_av)
+
+rna_norm_av <- na.omit(rna_norm_av)
+rna_norm_sd <- na.omit(rna_norm_sd)
+
+write.csv(rna_norm_av, file = "Data/rna_norm_av.csv", row.names = FALSE)
+write.csv(rna_norm_sd, file = "Data/rna_norm_sd.csv", row.names = FALSE)
+```
+
+We have saved all the RNA's in order to do calculations later for correlations with their respective proteins, but now we will save only the significant RNAs as found by DESeq.
+
+```{r}
+rna_norm_av <- read.csv("Data/rna_norm_av.csv", header = TRUE)
+rna_norm_sd <- read.csv("Data/rna_norm_sd.csv", header = TRUE)
+
+all_rna_names <- as.character(rna_norm_av[, 1])
+
+sig_rna_names <- as.character(read.csv("Data/sig_rnas.csv", header = TRUE)[, 1])
+
+rna_keep <- which(all_rna_names %in% sig_rna_names)
+
+rna_sig_norm_av <- rna_norm_av[rna_keep, ]
+rna_sig_norm_sd <- rna_norm_sd[rna_keep, ]
+
+write.csv(rna_sig_norm_av, file = "Data/rna_sig_norm_av.csv", row.names = FALSE)
+write.csv(rna_sig_norm_sd, file = "Data/rna_sig_norm_sd.csv", row.names = FALSE)
+```
+
+
+### Normalizing protein counts
+
+Now we'll perform a similar procedure for the proteins, only our normalization scheme is a little different. Instead of using DESeq to normalize counts, we will normalize to the total read depth at each time point by dividing each element by its column sum. First, we read in the raw data. The format is the same as for the RNAs.
+
+```{r}
+pro <- read.csv("Data/protein.csv", header = TRUE, as.is = TRUE)
+nrow(pro)
+head(pro)
+```
+
+Find the proteins to keep, which are only those with a maximum read of at least 10. We'll omit them after we find the read depth.
+
+```{r}
+pro_maxes <- apply(pro[, -1], 1, max)
+pro_keep <- which(pro_maxes >= 10)
+```
+
+Find the total read depth apply finding column sums for each time replicate, and then divide each column by the column sum.
+
+```{r}
+pro_time_maxes <- colSums(pro[, -1])
+pro_norm <- sweep(as.matrix(pro[, -1]), 2, pro_time_maxes, `/`)
+```
+
+Throw out insignificant proteins found before.
+
+```{r}
+pro_norm <- pro_norm[pro_keep, ]
+pro_names <- pro[pro_keep, 1]
+```
+
+Normalize each row by its maximum value.
+
+```{r}
+pro_norm_av <- matrix(rep(0, nrow(pro_norm) * 9), nrow = nrow(pro_norm))
+pro_norm_sd <- matrix(rep(0, nrow(pro_norm) * 9), nrow = nrow(pro_norm))
+
+for (t in 1:9) {
+	pro_norm_t <- pro_norm[, c(t, t + 9, t + 18)]
+	pro_norm_av[, t] <- apply(pro_norm_t, 1, mean)
+	pro_norm_sd[, t] <- apply(pro_norm_t, 1, sd)
+}
+
+# Normalize it so it's in (0, 1)
+pro_norm_av_max <- apply(pro_norm_av, 1, max)
+
+pro_norm_av <- sweep(pro_norm_av, 1, pro_norm_av_max, '/') 
+pro_norm_sd <- sweep(pro_norm_sd, 1, pro_norm_av_max, '/') 
+```
+
+Finally, attach the protein names from before, create a dataframe, and save it to a csv.
+
+```{r}
+pro_norm_av <- data.frame(pro_names, pro_norm_av)
+colnames(pro_norm_av) <- c("gene_id", "t3", "t4", "t5", "t6", 
+						   "t8", "t24", "t48", "t168", "t336")
+						   
+pro_norm_sd <- data.frame(pro_names, pro_norm_sd)
+colnames(pro_norm_sd) <- colnames(pro_norm_av)
+
+
+write.csv(pro_norm_av, file = "Data/pro_norm_av.csv", row.names = FALSE)
+write.csv(pro_norm_sd, file = "Data/pro_norm_sd.csv", row.names = FALSE)
+```
+
+We have normalized the RNA and protein data, so we are ready to perform our methods.
+
+## Methods & Results
+
+Before we continue, we must load some R libraries. The purpose of each will be clarified later on. [`ggplot2`](https://cran.r-project.org/web/packages/ggplot2/index.html) is a powerful package which can easily produce rich graphics far superior to the base graphics in R.
+
+```{r, eval=F}
+## To install RDAVIDWebService, uncomment these two lines below (requires java >=1.8, openssl >= 1.06)
+# source("https://bioconductor.org/biocLite.R")
+# biocLite("RDAVIDWebService") 
+# All other packages are available from CRAN
+
+library(ggplot2)          # plotting
+library(gridExtra)        # make a grid with ggplot
+library(reshape2)         # melt function
+library(caTools)          # trapz function
+library(foreach)          # faster for-loops
+library(doParallel)       # works with foreach
+library(RDAVIDWebService) # run queries to DAVID API
+```
+
+```{r, include = FALSE}
+library(ggplot2) # plotting
+library(reshape2) # melt function
+library(caTools) # trapz function
+library(RDAVIDWebService) # run requests to DAVID API
+library(gridExtra)
+library(foreach)
+library(doParallel)
+suppressMessages(library(ggplot2))
+```
+
+
+### Clustering of RNA and protein profiles by relative presence over time
+
+Clustering in this context is used to compare the relative variation in time course data across the whole population of both RNA vs proteins. This is used as a proxy of how much variation there is in regulation of the cellular component. First, we look at how to perform k-means clustering along with visualization, and then we will take a closer look at choosing the appropriate number of clusters.
+
+Read in the data from before. 
+
+```{r}
+rna_sig_norm_av <- read.csv("Data/rna_sig_norm_av.csv", header = T)
+pro_norm_av <- read.csv("Data/pro_norm_av.csv", header = T)
+```
+
+Below we cluster the RNA time profiles. In the paper, 15 clusters are chosen. K-means clustering in R is pretty straightforward. The `$centers` component contains the centroids of each cluster. The `melt` command will turn a this matrix of centroids into a coordinate-element list which will make graphing with `ggplot2` possible. 
+
+```{r}
+# Number of clusters
+rna_centers <- 15
+
+rna_k <- kmeans(rna_sig_norm_av[, -1], centers = rna_centers)
+rna_k_centers <- rna_k$centers
+head(rna_k_centers)
+rna_k_centers_m <- melt(rna_k_centers)
+head(rna_k_centers_m)
+```
+
+To visualize the results from k-means clustering, we will make a heatmap with `geom_tile` from `ggplot2`. The colors for the low and high end of the spectrum may be adjusted.
+
+```{r, fig.width = 7, fig.height = 6}
+p <- ggplot(rna_k_centers_m, aes(x = Var2, y = Var1, fill = value)) + 
+geom_tile() + 
+scale_fill_gradient(low = "snow", high = "dodgerblue3") + 
+xlab("Time point") + 
+ylab("Cluster number") +
+ggtitle("RNA Cluster Centroids")
+p
+```
+
+We will do the same thing now for proteins now. For this, 25 clusters are chosen in the paper.
+
+```{r, fig.width = 7, fig.height = 6}
+# Number of clusters
+pro_centers <- 25
+
+# Run clustering
+pro_k <- kmeans(pro_norm_av[, -1], centers = pro_centers)
+pro_k_centers <- pro_k$centers
+pro_k_centers_m <- melt(pro_k_centers)
+
+q <- ggplot(pro_k_centers_m, aes(x = Var2, y = Var1, fill = value)) + 
+geom_tile() + 
+scale_fill_gradient(low = "snow", high = "dodgerblue3") + 
+xlab("Time point") + 
+ylab("Cluster number") +
+ggtitle("Protein Cluster Centroids")
+q
+```
+
+According to the paper, the number of clusters were chosen by "visual inspection." A less subjective way of selecting number of clusters is the ["elbow method"](https://en.wikipedia.org/wiki/Determining_the_number_of_clusters_in_a_data_set#The_Elbow_Method). For this, we make plot the number of clusters against the proportion of variation in the data explained by clustering, defined as the ratio of sum of squares between clusters and the total sum of squares. We select the number of clusters at the "elbow," the point at which we reach significantly diminishing returns in percentage of variation explained. This is still a subjective method, but it is a good procedure to use a first-pass over the data. 
+
+In R, we create two vectors, which will contain the proportion of variation in data explained by clustering, and compute this number for increasing number of clusters, from 1 to 30. You may need to run the for-loop several times to reach convergence towards the higher end of clustering.
+
+```{r}
+numclusters <- 1:30
+rna_perc_exp <- c()
+pro_perc_exp <- c()
+
+for (i in numclusters) {
+	rna_k_i <- kmeans(rna_sig_norm_av[, -1], centers = i)
+	pro_k_i <- kmeans(pro_norm_av[, -1], centers = i)
+	
+	rna_perc_exp <- c(rna_perc_exp, rna_k_i$between / rna_k_i$totss * 100)
+	pro_perc_exp <- c(pro_perc_exp, pro_k_i$between / pro_k_i$totss * 100)
+}
+```
+
+Now we will plot these two sets to compare them
+
+```{r}
+h <- qplot(numclusters, geom = "blank") +
+xlab("Number of Clusters") + 
+ylab("Percentage of Variation Explained by Clusters") + 
+labs(title = "Elbow Method for k-means clustering for RNA vs. Proteins") +
+geom_line(aes(x = numclusters, y = rna_perc_exp, colour = "RNA")) + 
+geom_point(aes(x = numclusters, y =  rna_perc_exp, colour = "RNA")) + 
+geom_line(aes(x = numclusters, y = pro_perc_exp, colour = "Proteins")) + 
+geom_point(aes(x = numclusters, y = pro_perc_exp, colour = "Proteins")) +
+scale_colour_manual(name = "", values = c("RNA" = "dodgerblue3", "Proteins" = "firebrick3"))  +
+geom_point(aes(x = numclusters[2], y = rna_perc_exp[2]), colour = "black", shape = 1, size = 5) +
+geom_point(aes(x = numclusters[3], y = pro_perc_exp[3]), colour = "black", shape = 1, size = 5)
+h
+```
+
+I added a black circle to the points of the curves which I consider to be the "elbows": Two clusters for RNAs and three clusters for proteins. As described in the paper, it appears that there is greater variability in time course counts in proteins than there is in RNAs. This is likely do to the fact there are more post-translational regulations of proteins than there are transcriptional regulations of RNAs. However, choosing 15 and 25 clusters for RNAs and proteins, respectively, appears to be excessive. These two points of each curve are far to the right of any point which could be considered the elbow.
+
+### Correlations of time course profiles between individual proteins and their respective transcripts
+
+This section looks at how proteins are regulated compared to the presence of their transcripts. There are two limiting cases. The first is that the relative abundance of a protein at a given time point is directly proportional to the instantaneous relative abundance of its transcript, known as proportional regulation. This suggests a rapid rate of decay compared to the time scale of the experiment. The other is that the relative abundance of a protein at a given time point is directly proportional to the cumulative time integral of its transcript up to that time, known as integral regulation, suggesting that the rate of decay for that protein is slow compared to the time scale of the experiment.
+
+First, let's define a new function called `ctrapz` which will calculate a cumulative trapezoidal numerical integration between two vectors. The [trapz](http://svitsrv25.epfl.ch/R-doc/library/caTools/html/trapz.html) function from the `caTools` is used to calculate an approximated integral using the [trapezoid rule](https://en.wikipedia.org/wiki/Trapezoidal_rule) (my function here is modeled after a [similar function in MATLAB](https://www.mathworks.com/help/matlab/ref/cumtrapz.html)).
+
+
+```{r}
+ctrapz <- function(x, y) {
+	require(caTools)
+	n <- length(x)
+	
+	ctrapz <- c()
+	
+	for (i in 1:(n-1)) {
+		ctrapz <- c(ctrapz, trapz(x[1:(i+1)], y[1:(i+1)]))
+	}
+	return(ctrapz)
+}
+```
+
+
+In the `Data` folder on the github page, I have a file called `dictionary.csv`, which we will use to map proteins to their respective transcripst. It also contains some other information, such as the short name of the protein, the starting and stopping point of the gene along the entire genome, and the operon on which the gene lies.
+
+```{r}
+dict <- read.csv("Data/dictionary.csv", header = T)
+head(dict)
+```
+
+Let's read in the data again, this time using the full list of RNAs (instead of just the significant ones) so that we cover every protein.
+
+```{r}
+rna_norm_av <- read.csv("Data/rna_norm_av.csv", header = T)
+pro_norm_av <- read.csv("Data/pro_norm_av.csv", header = T)
+```
+
+
+We will save the dictionary RNA names, and the names from the RNA and protein count data files.
+
+```{r}
+dict_rna_names <- as.character(dict[, 3])
+dict_pro_names <- as.character(dict[, 1])
+
+rna_names <- as.character(rna_norm_av[, 1])
+pro_names <- as.character(pro_norm_av[, 1])
+```
+
+Then we loop over every protein, and calculate the proportional and integral correlations with RNA. Using the `cor` command with argument `method = "spearman"` will calculate the [Spearman correlation coefficient](https://en.wikipedia.org/wiki/Spearman's_rank_correlation_coefficient), a more robust method of finding correlations which looks for a monotonic relationship between two variables instead of strictly linear relationships, which is what the more commonly used Pearson correlation coefficient does. The `ctrapz` function I defined above will find the time integral of RNA levels.
+
+```{r}
+N <- nrow(pro_norm_av)
+
+cor_mat <- matrix(rep(NA, N * 3), nrow = N)
+
+times <- c(3, 4, 5, 6, 8, 24, 48, 24*7, 24*7*2)
+
+# for-loop going over all proteins in file
+for (i in 1:N) {
+	# Match protein to its transcript
+	pro_name_i <- pro_names[i]
+	index_p2r <- which(dict_pro_names == pro_name_i) # index for protein -> RNA 
+	rna_name_i <- dict_rna_names[index_p2r]
+	
+	index_r2v <- which(rna_names == rna_name_i) # index for RNA in RNA file to find values
+	
+	# Normalized RNA and protein counts for protein and its rna
+	rna_vals <- as.numeric(rna_norm_av[index_r2v, -1])
+	pro_vals <- as.numeric(pro_norm_av[i, -1])
+	
+	# Cumulative integral for RNA values and times
+	rna_vals_int <- c(rna_vals[1], ctrapz(times, rna_vals))
+	
+	cor_mat[i, 1] <- pro_name_i # Save the name of the protein
+	cor_mat[i, 2] <- as.numeric(cor(rna_vals, pro_vals, method = "spearman")) 
+	cor_mat[i, 3] <- as.numeric(cor(rna_vals_int, pro_vals, method = "spearman"))
+}
+
+prop_reg <- as.numeric(cor_mat[, 2])
+int_reg <- as.numeric(cor_mat[, 3])
+```
+
+Finally, make a histogram of both sets of correlation coefficients.
+
+```{r, message=FALSE}
+u <- qplot(prop_reg,
+	xlab = "Spearman Correlation Coefficient",
+	main = "Protein vs. RNA (Prop. Regulation)") + 
+	geom_histogram(
+	binwidth = diff(range(prop_reg)) / 8,
+	col = "dodgerblue4",
+	fill = "dodgerblue3")
+u
+
+v <- qplot(int_reg,
+	xlab = "Spearman Correlation Coefficient",
+	main = "Protein vs. Time Integral of RNA (Int. Regulation)") + 
+	geom_histogram(
+	binwidth = diff(range(int_reg)) / 8,
+	col = "dodgerblue4",
+	fill = "dodgerblue3")
+v
+```
+
+These results closely mirror the figures provided in the paper. We don't expect to see much overlap between both limiting cases, and to verify this we can make a 2D histogram.
+
+```{r, fig.width = 7, fig.height = 6}
+w <- qplot(prop_reg, int_reg, geom = "blank",
+	xlab = "Correlation of Protein vs. RNA",
+	ylab = "Correlation of Protein vs. Time Integral of RNA",
+	main = "2D Histogram of Different Protein & RNA Regulation") + 
+	stat_bin2d(bins = 10) +
+	scale_fill_gradientn(colours = c("snow", "dodgerblue3"))
+w
+```
+
+The strong negative correlation shown in this histogram confirms our expectations. There is actually a small cluster of RNAs residing in the upper right-hand corner, but these may be proteins with associated RNAs for which the counts of both are very low during the entire duration.
+
+### Intra-operon correlations of mRNAs and proteins
+
+Genes lying in the same operon are transcribed at the same time as a single RNA. Therefore, we expect the RNAs of genes in the same operon to be highly correlated. However, we expect less correlation between proteins from the same operon because of differences in post-translational regulation. 
+
+To perform this part of the analysis, create a list of unique operons, and then loop over each one, calculate the (Spearman) correlation matrix of RNAs and proteins in the same operon, and take the median pairwise correlation from this matrix.
+
+```{r}
+operonlist <- as.character(dict$operon.name)
+unique_operons <- unique(operonlist)
+
+op_rna_cor <- c()
+op_pro_cor <- c()
+
+for (i in 1:length(unique_operons)) {
+	operon_i <- unique_operons[i]
+	operon_indices <- which(operonlist == operon_i)
+	
+	# Skip operons with fewer than 2 proteins
+	if (length(operon_indices) < 2) {
+		next
+	}
+	
+	# Get values for RNAs and proteins in this operon
+	operon_rna_names <- dict_rna_names[operon_indices]
+	operon_pro_names <- dict_pro_names[operon_indices]
+	
+	rna_operon <- rna_sig_norm_av[which(rna_names %in% operon_rna_names), ]
+	pro_operon <- pro_norm_av[which(pro_names %in% operon_pro_names), ]
+
+	# Make correlation matrix
+	pair_cor_rna <- cor(t(rna_operon[, -1]), method = "spearman")
+	pair_cor_pro <- cor(t(pro_operon[, -1]), method = "spearman")
+
+	# Add median pairwise correlation coeff by selecting lower triangle of correlation matrix
+	op_rna_cor <- c(op_rna_cor, median(pair_cor_rna[lower.tri(pair_cor_rna)]))
+	op_pro_cor <- c(op_pro_cor, median(pair_cor_pro[lower.tri(pair_cor_pro)]))
+}
+```
+
+Now make a pair of histograms, omitting any missing values.
+
+```{r, message=FALSE}
+x <- qplot(na.omit(op_rna_cor),
+	xlab = "Spearman Correlation Coefficient",
+	main = "RNA Intra-operon Correlation") + 
+	geom_histogram(
+	binwidth = diff(range(na.omit(op_rna_cor))) / 9,
+	col = "dodgerblue4",
+	fill = "dodgerblue3")
+x
+
+y <- qplot(na.omit(op_pro_cor),
+	xlab = "Spearman Correlation Coefficient",
+	main = "Protein Intra-operon Correlation") + 
+	geom_histogram(
+	binwidth = diff(range(na.omit(op_pro_cor))) / 9,
+	col = "dodgerblue4",
+	fill = "dodgerblue3")
+y
+```
+
+These results do not align very closely with the Figure 3 in the original paper. I am still not sure why this is, though perhaps it is because of the inaccuracy of the dictionary (I did not use the same dictionary of operons as the authors did). However, for the RNAs we do see more instances of higher correlation coefficients than we see with the histogram for the proteins.
+
+### Classification of expression-profile time courses into distinct categories and GO term enrichment
+
+In this final method presented, we analyze which cellular processes are changed in response to the stress induced by starvation conditions. This consists of three steps:
+
+1. Fitting a continuous piecewise-linear curve to the time course data of each component,
+
+2. Classification of time courses to categories based on the fitted curve, and
+
+3. GO term enrichment via DAVID to analyze the function of RNAs and proteins in these cateogories.
+
+The function to be fitted using the data for the relative presence of component $i$ at time $t_j$ is  
+$$\begin{align} f_i(t_j) = \begin{cases} A_{1i} & \text{if }\; t_j \leq \tau_{1i} \\ A_{1i} + \frac{A_{2i} - A_{1i}}{\tau_{2i} - \tau_{1i}}\cdot(t_j - \tau_1) & \text{if }\; \tau_{2i} < t_j \leq \tau_{3i} \\ A_{2i} & \text{if }\; \tau_{2i} < t_j \leq \tau_{3i} \\ A_{1i} + \frac{A_{3i} - A_{2i}}{\tau_{3i} - \tau_{2i}}\cdot(t_j - \tau_1) & \text{if }\; \tau_{3i} < t_j \leq \tau_{4i} \\ A_{3i} & \text{if }\; t_j > \tau_{4i}  \end{cases} \end{align}.$$
+
+```{r, echo = F}
+fit <- function(vec, times) {
+	# Used in plotfun()
+	#
+	# INPUTS
+	# vec is a vector of estimates for the amplitude parameters (vec[1:3])
+	# 	  and time parameters (vec[4:7])
+	# times is a vector of continuos time points
+	A1 <- vec[1]
+	A2 <- vec[2]
+	A3 <- vec[3]
+	tau1 <- vec[4]
+	tau2 <- vec[5]
+	tau3 <- vec[6]
+	tau4 <- vec[7]
+	
+	fit <- (  A1 * (times <= tau1) + 
+
+	( A1 + (A2 - A1) / (tau2 - tau1) * (times - tau1) ) * 
+	(times > tau1 & times <= tau2) + 
+
+	A2 * (times > tau2 & times <= tau3) + 
+
+	( A2 + (A3 - A2) / (tau4 - tau3) * (times - tau3) ) * 
+	(times > tau3 & times <= tau4) + 
+
+	A3 * (times > tau4) )
+	
+	return(fit)
+}
+
+times.cont <- seq(3, 24*7*2, length.out = 1000)
+times <- c(3, 4, 5, 6, 8, 24, 48, 24*7, 24*7*2)
+est <- c(0.125,0.5,0.75,4,6,24,24*7)
+z <- qplot(times.cont, geom = "blank") +
+xlab("Time (h)") +
+ylab("Relative presence") + 
+labs(title = "Function to Fit") +
+geom_line(aes(x = times.cont, y = fit(est, times.cont)), col = "red")+
+geom_point(aes(x = est[4:7], y = est[c(1,2,2,3)]), col = "red") +
+geom_vline(xintercept=est[4:7], linetype="dotdash") +
+geom_hline(yintercept=est[1:3], linetype="dotted") +
+annotate("text", x = 3, y = est[1] + 0.029, label= "A[1]", size = 5, parse = TRUE, family = "Times", fontface="italic") + 
+annotate("text", x = 3, y = est[2] + 0.029, label= "A[2]", size = 5, parse = TRUE, family = "Times", fontface="italic") + 
+annotate("text", x = 3, y = est[3] + 0.029, label= "A[3]", size = 5, parse = TRUE, family = "Times", fontface="italic") + 
+annotate("text", x = est[4]+ 0.4, y = 0.05, label= "tau[1]", size = 5, parse = TRUE, family = "Times", fontface="italic") + 
+annotate("text", x = est[5]+0.7, y = 0.05, label= "tau[2]", size = 5, parse = TRUE, family = "Times", fontface="italic") + 
+annotate("text", x = est[6]+3, y = 0.05, label= "tau[3]", size = 5, parse = TRUE, family = "Times", fontface="italic") + 
+annotate("text", x = est[7]+18, y = 0.05, label= "tau[4]", size = 5, parse = TRUE, family = "Times", fontface="italic") + 
+
+coord_cartesian(ylim = c(0, 1)) +
+scale_x_log10()
+z
+```
+
+(The curved part of the graph above is a result of the log-scaling of time on the x-axis, but it is linear in linear time.)
+
+$A_1$, $A_2$, and $A_3$ are referred to as the *amplitude* parameters, and $\tau_1$, $\tau_2$, $\tau_3$, and $\tau_4$ are referred to as the *time* parameters, which are the "knots" at which the slope of the function changes. This function is fitted so as to minimize the cost function for component $i$
+
+$$C_i = \sum_j \frac{(d_i(t_j) - f_i(t_j))^2}{\sigma_i(t_j)},$$
+
+where $d_i(t_j)$ is the average of relative presences of component $i$ across the three replicates, $\sigma_i(t_j)$ is the standard deviation of relative presences of component $i$ across the three replicates, and $f_i(t_j)$ is defined as above. This cost function is the sum of squared differences between predicted presences and average presence over all times, scaled by the experimental error. In the original paper, the *variance* across the three replicates is used for scaling. However, there are many instances of having counts of all zeros at a given time point for all replicates (so variance = 0), and when I tried running my optimization algorithm using the variance instead of standard deviation, the weight assigned to these points overwhelmed the weights given to the others.
+
+It should be noted that we are fitting a curve with seven parameters with nine data points, so overfitting is unavoidable. In fact, it could be argued that we are doing little more than "connecting the dots" between data-points. This point should not be overlooked. However, this fitting is only used for classification purposes, as we will see below, and not for the sake of prediction or interpolation, so we may procede as long as we do not make too much of our estimated parameters. Also note that I do not compute standard errors for the parameters. This means we cannot gauge the underlying uncertainty of our estimates. I do not see an easy workaround for this. Perhaps the best option would be to perform nonparametric [residual bootstrapping](https://en.wikipedia.org/wiki/Bootstrapping_%28statistics%29), but there are a few problems with this approach. The residuals are probably not identically distributed. For instance, these are count data, so time points with very low counts across replicates imply low variability, and time points with higher counts across replicates imply high variability. And even if we were to make a naive iid assumption of residuals, we would need to fit around 10,000 number of bootstrap models in order to come up with an estimated variance of the estimated parameters, and this would require a lot of computational firepower even for just one component.
+
+Once these curves have all been fit, the category of component $i$ is defined as 
+$$\begin{aligned} \text{category}_i =  \begin{cases} \text{up-regulated }& \text{if }\; A_{1i} < A_{2i} \leq A_{3i} \\ \text{down-regulated }& \text{if }\; A_{1i} > A_{2i} \geq A_{3i} \\ \text{transiently up-regulated }& \text{if }\; A_{1i} < A_{3i} < A_{2i} \\ \text{transiently down-regulated }& \text{if }\; A_{2i} < A_{3i} < A_{1i} \\ 	\text{ambiguous }& \text{otherwise}  \end{cases} \end{aligned}$$
+
+given that the inequalities hold within some tolerance level to account for experimental error. For example, a component will be classified as up-regulated if $$(A_{3i} - \text{tol} > A_{2i} \;\text{AND}\; A_{2i} + \text{tol} > A_{1i}) \;\text{OR}\;\\ (A_{2i} - \text{tol} > A_{1i} \;\text{AND}\; A_{3i} + \text{tol} > A_{2i}) \;\text{OR}\;\\ (A_{3i} - \text{tol} > A_{1i} \;\text{AND}\; A_{2i} + \text{tol} > A_{1i} \;\text{AND}\; A_{2i} - \text{tol} > A_{1i})$$
+
+Here I am only concerened with components which are either up- or down-regulated. Finally, once have assigned a category to each component of both types, we submit lists of up- and down-regulated RNAs and proteins to [DAVID](https://david.ncifcrf.gov), a bioinformatics database which will return GO terms describing the function of genes in these categories. This provides us with insight into the physiological response of *E. coli* to starvation conditions. 
+
+#### Fitting a piecewise continuous curve 
+
+We will need to fit a curve for 1946 RNAs and 1677 proteins, which adds up to some serious computational heavy lifting. Since these tasks are independent of one another, we can lighten the load by utilizing parallelization using the [`foreach`](https://cran.r-project.org/web/packages/foreach/) package, which works in conjunction with `doParallel` to make faster loops in R, which are notoriously slow. We already have these two packages loaded, so we just need to tell R how many processor cores to use in parallel. 
+
+```{r}
+detectCores()
+cl <- makeCluster(4) # however many cores you have
+registerDoParallel(cl)
+```
+
+Read in the data from before.
+
+```{r}
+rna.av <- read.csv("Data/rna_sig_norm_av.csv", header = T, as.is = T)
+rna.sd <- read.csv("Data/rna_sig_norm_sd.csv", header = T, as.is = T)
+
+pro.av <- read.csv("Data/pro_norm_av.csv", header = T, as.is = T)
+pro.sd <- read.csv("Data/pro_norm_sd.csv", header = T, as.is = T)
+
+dict <- read.csv("Data/dictionary.csv", header = T, as.is = T)
+entrez.dict <- read.csv("Data/entrez_dictionary.csv", header = T, as.is = T)
+
+head(entrez.dict)
+```
+
+We define three functions, `costfun`, `fit`, and `plotfun`. The first is used to evaluate the cost function for a component associated with a candidate set of parameters. Again, it is the function to be minimized for each component. The other functions are used to graph an estimated time course curve of a component, along with the data. `costfun` is a bit clunky because it adds 1000 to the computed cost if the parameters are not well behaved (i.e., if the amplitude parameters are not within (0, 1) or the $\tau$ values are not in a correct order) but I still noticed that the optimization method usually reached convergence and within a reasonable amount of time. Note that we must predefine the vectors of averages and standard deviations across replicates for our given component *before* we run the cost function.
+
+```{r}
+costfun <- function(vec) {
+	# INPUTS
+	# vec is a vector of guesses for the 3 amplitude parameters (vec[1:3])
+	# 	  and 4 time parameters (vec[4:7])
+	# AVG and SD must be PRE-DEFINED as averages of presences and 
+	# 	  standard deviations of presences, respectively, for each time
+	#
+	# OUTPUT: Result of cost function defined in Houser et al. p. 21
+	
+	times <- c(3, 4, 5, 6, 8, 24, 48, 24*7, 24*7*2)
+	
+	A1 <- vec[1]; A2 <- vec[2]; A3 <- vec[3]
+	tau1 <- vec[4]; tau2 <- vec[5]; tau3 <- vec[6]; tau4 <- vec[7]
+	
+	# Function for the fit
+	fit <- (  A1 * (times <= tau1) + 
+
+	( A1 + (A2 - A1) / (tau2 - tau1) * (times - tau1) ) * 
+	(times > tau1 & times <= tau2) + 
+
+	A2 * (times > tau2 & times <= tau3) + 
+
+	( A2 + (A3 - A2) / (tau4 - tau3) * (times - tau3) ) * 
+	(times > tau3 & times <= tau4) + 
+
+	A3 * (times > tau4) )
+	
+	# Are the taus in the wrong order? is tau4 > final time? Is tau1 negative?
+	check1 <- (tau1 < 0 || tau4 < tau3 || tau3 < tau2 || tau2 < tau1 || tau4 > times[9])
+	# Are all the amplitudes within (0, 1)?
+	check2 <- (A1 > 1 || A1 < 0 || A2 > 1 || A2 < 0 || A1 > 1 || A1 < 0)
+	
+	# Compute cost function, plus penalty if conditions are not all met
+	# 0.001 added to denominator for numerical stability
+	cost <- sum((fit - AVG)^2 / (SD + 0.01)) + (check1 + check2) * 1000
+
+	return(cost)
+}
+
+
+fit <- function(vec, times) {
+	# Used in plotfun()
+	#
+	# INPUTS
+	# vec is a vector of estimates for the amplitude parameters (vec[1:3])
+	# 	  and time parameters (vec[4:7])
+	# times is a vector of continuos time points
+	A1 <- vec[1]
+	A2 <- vec[2]
+	A3 <- vec[3]
+	tau1 <- vec[4]
+	tau2 <- vec[5]
+	tau3 <- vec[6]
+	tau4 <- vec[7]
+	
+	fit <- (  A1 * (times <= tau1) + 
+
+	( A1 + (A2 - A1) / (tau2 - tau1) * (times - tau1) ) * 
+	(times > tau1 & times <= tau2) + 
+
+	A2 * (times > tau2 & times <= tau3) + 
+
+	( A2 + (A3 - A2) / (tau4 - tau3) * (times - tau3) ) * 
+	(times > tau3 & times <= tau4) + 
+
+	A3 * (times > tau4) )
+	
+	return(fit)
+}
+
+plotfun <- function(est, AVG, SD, name, type) {
+  ##### *** Function for graphing estimated time course *** #####
+  # INPUTS
+  #
+	# est is the estimated parameters
+	# AVG is the average of each time point
+	# SD is the standard deviation of each time point
+	# name is the name of the gene's transcripts as a string
+	# type is a string, either "RNA"
+	times.cont <- seq(3, 24*7*2, length.out = 1000)
+	if (name == "") {name = "NOT FOUND"}
+	v <- qplot(times.cont, geom = "blank") +
+	xlab("Time (h)") +
+	ylab("Relative presence") + 
+	labs(title = sprintf("Estimated time course function for %s of %s", type, name)) +
+	geom_line(aes(x = times.cont, y = fit(est, times.cont)), col = "red") +
+	geom_point(aes(x = times, y = as.numeric(AVG))) +
+	geom_errorbar(aes(x=times, 
+		ymin = as.numeric(AVG-SD), ymax = as.numeric(AVG+SD)), 
+		width=0.05) + 
+	coord_cartesian(ylim = c(0, 1)) +
+	scale_x_log10()
+	
+	return(v)
+}
+```
+
+We will try to fit a curve for a randomly selected RNA.
+
+```{r}
+set.seed(350)
+n <- sample(1:nrow(rna.av), 1)
+
+AVG <- rna.av[n, -1]
+SD <- rna.sd[n, -1]
+
+name <- dict[which(dict[, 3] == rna.av[n, 1]), 2]
+```
+
+We initialize the amplitude parameters with random draws. For every component, we initialize the time parameters at the second, fourth, and sixth, and seventh observed time points (i.e., 4, 6, 24, and 24*7 = 168 hours) because, given that we only have nine time points, these are most likely to be the time points at which a "knot" will be found.
+
+```{r}
+times <- c(3, 4, 5, 6, 8, 24, 48, 24*7, 24*7*2)
+A1 <- runif(1); A2 <- runif(1); A3 <- runif(1)
+tau1 <- times[2]; tau2 <- times[4]; tau3 <- times[6]; tau4 <- times[8]
+```
+
+
+Houser et al. originally used a differential evolution algorithm to fit the function. However, I chose another iterative algorithm, called the Neldor-Mead method and which is in the base R command `optim`, to fit the function. The first argument is the vector of initial parameters, the and the second argument is the function to be optimized. The [Wikipedia entry](https://en.wikipedia.org/wiki/Nelder–Mead_method) for Nelder-Mead provides an excellent explanation of how it works. Essentially, it optimizes a function of $n$ parameters by starting with $n+1$ points in the $n$-simplex, and iteratively updating and shrinking the region outlined by the $n+1$ points until convergence is reached. It is appealing because it is a highly general and non-convex optimization technique, and it works reasonably fast given the number of parameters in our problem. By default, `optim` chooses a maximum number of iterations of 500, but I changed this to 1000 in order to make it more likely to reach convergence.
+
+```{r}
+system.time(myoptim <- optim(c(A1, A2, A3, tau1, tau2, tau3, tau4), 
+			costfun, 
+			method = "Nelder-Mead", 
+			control = list(maxit = 1000)))
+```
+
+Display the results of optimization and the estimated parameters. The `value` object tells us the value of the function at the optimal point, `counts` gives the number of iterations used, and a `convergence` message of `0` represents that convergence was reached. 
+
+```{r}
+myoptim$value
+myoptim$counts
+myoptim$convergence
+
+est <- myoptim$par
+est
+```
+
+Now plot the estimated curve.
+
+```{r}
+plotfun(est, AVG, SD, name, type = "transcript")
+```
+
+The black points are the average presences of each time point, and the error bars represent the standard deviation of each time point. Now let's fit six more curves and see how our method holds up. The `grid.arrange` function will let us make a grid of these plots.
+
+```{r, fig.width = 10, fig.height = 7}
+AVGmat <- matrix(rep(0, 6 * length(times)), nrow = 6)
+ SDmat <- matrix(rep(0, 6 * length(times)), nrow = 6)
+estmat <- matrix(rep(0, 6 * 7), nrow = 6, ncol = 7)
+namevec <- vector(length = 6)
+convvec <- vector(length = 6)
+
+for (i in 1:6) {
+	n <- sample(1:nrow(rna.av), 1)
+	
+	namevec[i] <- dict[which(dict[, 3] == rna.av[n, 1]), 2]
+	
+	AVG <- as.numeric(rna.av[n, -1])
+	 SD <- as.numeric(rna.sd[n, -1])
+	
+	AVGmat[i, ] <- AVG 
+	 SDmat[i, ] <- SD 
+	
+	A1 <- runif(1); A2 <- runif(1); A3 <- runif(1)
+	tau1 <- times[2]; tau2 <- times[4]; tau3 <- times[6]; tau4 <- times[8]
+
+	optim.i <- optim(c(A1, A2, A3, tau1, tau2, tau3, tau4), 
+				     costfun, 
+				     method = "Nelder-Mead", 
+				     control = list(maxit = 1000))
+
+	convvec[i] <- optim.i$convergence
+	estmat[i, ]<- optim.i$par
+}
+convvec
+
+a  <- plotfun(estmat[1, ], AVGmat[1, ], SDmat[1, ], namevec[1], type = "transcript")
+b  <- plotfun(estmat[2, ], AVGmat[2, ], SDmat[2, ], namevec[2], type = "transcript")
+c  <- plotfun(estmat[3, ], AVGmat[3, ], SDmat[3, ], namevec[3], type = "transcript")
+d  <- plotfun(estmat[4, ], AVGmat[4, ], SDmat[4, ], namevec[4], type = "transcript")
+ee <- plotfun(estmat[5, ], AVGmat[5, ], SDmat[5, ], namevec[5], type = "transcript")
+ff <- plotfun(estmat[6, ], AVGmat[6, ], SDmat[6, ], namevec[6], type = "transcript")
+
+grid.arrange(a, b, c, d, ee, ff, ncol=2)
+```
+
+The optimization method seems to give estimated curves which are in line with the data. Again, less weight is given to points with higher standard deviations, so the curve will try to run through points with low standard deviations. Let's try our approach with proteins now by plotting six randomly selected proteins.
+
+```{r, fig.width = 10, fig.height = 7}
+AVGmat <- matrix(rep(0, 6 * length(times)), nrow = 6)
+ SDmat <- matrix(rep(0, 6 * length(times)), nrow = 6)
+estmat <- matrix(rep(0, 6 * 7), nrow = 6, ncol = 7)
+namevec <- vector(length = 6)
+convvec <- vector(length = 6)
+
+for (i in 1:6) {
+	n <- sample(1:nrow(pro.av), 1)
+	
+	namevec[i] <- dict[which(dict[, 1] == pro.av[n, 1]), 2]
+	
+	AVG <- as.numeric(pro.av[n, -1])
+	 SD <- as.numeric(pro.sd[n, -1])
+	
+	AVGmat[i, ] <- AVG 
+	 SDmat[i, ] <- SD 
+	
+	A1 <- runif(1); A2 <- runif(1); A3 <- runif(1)
+	tau1 <- times[2]; tau2 <- times[4]; tau3 <- times[6]; tau4 <- times[8]
+
+	optim.i <- optim(c(A1, A2, A3, tau1, tau2, tau3, tau4), 
+				     costfun, 
+				     method = "Nelder-Mead", 
+				     control = list(maxit = 1000))
+
+	convvec[i] <- optim.i$convergence
+	estmat[i, ]<- optim.i$par
+}
+
+convvec
+
+g  <-  plotfun(estmat[1, ], AVGmat[1, ], SDmat[1, ], namevec[1], type = "protein")
+h  <-  plotfun(estmat[2, ], AVGmat[2, ], SDmat[2, ], namevec[2], type = "protein")
+eye <- plotfun(estmat[3, ], AVGmat[3, ], SDmat[3, ], namevec[3], type = "protein")
+jay <- plotfun(estmat[4, ], AVGmat[4, ], SDmat[4, ], namevec[4], type = "protein")
+kay <- plotfun(estmat[5, ], AVGmat[5, ], SDmat[5, ], namevec[5], type = "protein")
+ell <- plotfun(estmat[6, ], AVGmat[6, ], SDmat[6, ], namevec[6], type = "protein")
+
+grid.arrange(g, h, eye, jay, kay, ell, ncol=2)
+```
+
+The plot in the lower right-hand corner looks a little funky, but that is most likely due to the high variability throughout the entire time course.
+
+Let's make fits for all RNAs and all proteins. The demo below shows the time savings of using parallelization via `foreach` instead of R's base for-loops.
+
+```{r, eval = F}
+x1 <- matrix(nrow = 10, ncol = 7)
+
+# regular for-loop
+system.time(for (i in 1:10) {
+	AVG <- rna.av[i, -1]
+	SD  <- rna.sd[i, -1]
+	
+	A1 <- runif(1); A2 <- runif(1); A3 <- runif(1)
+	
+	optim.i <- optim(c(A1, A2, A3, tau1, tau2, tau3, tau4), 
+	costfun, 
+	method = "Nelder-Mead", 
+	control = list(maxit = 1000))
+	
+	x1[i, ] <- optim.i$par
+} )
+#   user  system elapsed
+# 24.737   0.223  25.119
+
+system.time (x2 <- 
+	foreach(i=1:10, .combine='rbind', .inorder=TRUE) %dopar% {
+	AVG <- rna.av[i, -1]
+	SD  <- rna.sd[i, -1]
+	
+	A1 <- runif(1); A2 <- runif(1); A3 <- runif(1)
+	
+	optim.i <- optim(c(A1, A2, A3, tau1, tau2, tau3, tau4), 
+	costfun, 
+	method = "Nelder-Mead", 
+	control = list(maxit = 1000))
+	
+	# parameter.matrix.example[i, ] <- optim.i$par
+	optim.i$par
+}
+)
+#  user  system elapsed
+# 0.068   0.020  12.015
+```
+
+We can see that we have time saving of about one-half (note: I am pretty sure this is because, despite the output of `detectCores()`, my lowly mid-2014 probably only has two processors instead of four. If you've got a better machine you'll likely see even greater savings.)
+
+Finally we perform the fitting for all RNAs. This took about 45 minutes on my MacBook Air. Also, save the results so we don't have to wait for that amount of time again.
+
+```{r, eval = F}
+parameters.rna <- 
+	foreach(i=1:nrow(rna.av), .combine='rbind', .inorder=TRUE) %dopar% {
+	AVG <- rna.av[i, -1]
+	SD  <- rna.sd[i, -1]
+	
+	A1 <- runif(1); A2 <- runif(1); A3 <- runif(1)
+	
+	optim.i <- optim(c(A1, A2, A3, tau1, tau2, tau3, tau4), 
+	costfun, 
+	method = "Nelder-Mead", 
+	control = list(maxit = 1000))
+	
+	# parameter.matrix.example[i, ] <- optim.i$par
+	optim.i$par
+}
+
+parameters.rna <- matrix(parameters.rna, nrow = nrow(parameters.rna))
+
+rna.fit <- data.frame(cbind(rna.av[, 1], round(parameters.rna, 6)))
+names(rna.fit) <- c("gene_id", "A1", "A2", "A3", "tau1", "tau2", "tau3", "tau4")
+write.csv(file = "Results/rna_parameters.csv", rna.fit, row.names = FALSE)
+```
+
+And now for the proteins. This took about 40 minutes for me.
+
+```{r, eval = F}
+parameters.pro <- 
+	foreach(i=1:nrow(pro.av), .combine='rbind', .inorder=TRUE) %dopar% {
+	AVG <- pro.av[i, -1]
+	SD  <- pro.sd[i, -1]
+	
+	A1 <- runif(1); A2 <- runif(1); A3 <- runif(1)
+	
+	optim.i <- optim(c(A1, A2, A3, tau1, tau2, tau3, tau4), 
+	costfun, 
+	method = "Nelder-Mead", 
+	control = list(maxit = 1000))
+	
+	# parameter.matrix.example[i, ] <- optim.i$par
+	optim.i$par
+}
+
+# Take only numerics
+parameters.pro <- matrix(parameters.pro, nrow = nrow(parameters.pro))
+
+pro.fit <- data.frame(cbind(pro.av[, 1], round(parameters.pro, 6)))
+names(pro.fit) <- c("gene_id", "A1", "A2", "A3", "tau1", "tau2", "tau3", "tau4")
+write.csv(file = "Results/pro_parameters.csv", pro.fit, row.names = FALSE)
+```
+
+
+#### Classification
+
+Now we classify each component based on its fitted curve. Read in the results of fitting.
+
+```{r}
+rna.fit <- read.csv("Results/rna_parameters.csv", header = TRUE, as.is = TRUE)
+
+A1.r <- rna.fit$A1
+A2.r <- rna.fit$A2
+A3.r <- rna.fit$A3
+
+pro.fit <- read.csv("Results/pro_parameters.csv", header = TRUE, as.is = TRUE)
+
+A1.p <- pro.fit$A1
+A2.p <- pro.fit$A2
+A3.p <- pro.fit$A3
+```
+
+Look for which ones are up- and down-regulated. 
+
+```{r}
+# Error threshold
+err <- 0.10
+
+cond1.r  <- {(A3.r - err > A2.r) & (A2.r + err > A1.r)}
+cond2.r  <- {(A2.r - err > A1.r) & (A3.r + err > A2.r)}
+cond2B.r <- {(A3.r - err > A1.r) & (A2.r + err > A1.r) & (A2.r - err < A1.r)}
+
+cond3.r  <- {(A3.r + err < A2.r) & (A2.r < A1.r + err)}
+cond4.r  <- {(A2.r + err < A1.r) & (A3.r < A2.r + err)}
+cond4B.r <- {(A3.r + err < A1.r) & (A2.r + err < A1.r) & (A2.r - err > A1.r)}
+
+rna.up <- rna.fit[cond1.r | cond2.r | cond2B.r , 1]
+rna.do <- rna.fit[cond3.r | cond4.r | cond4B.r , 1]
+
+sum(rna.up %in% rna.do)
+```
+
+There's no overlap between the two categories. We will need to give each one an Entrez IDs so we can run them through DAVID.
+
+```{r}
+rna.up.entrez <- c()
+for (name in rna.up) {
+	short <- dict$short.name[which(dict$mRNA_ID == name)]
+	new.entrez <- entrez.dict$Entrez_GeneID[which(entrez.dict$Symbol == short)]
+	
+	rna.up.entrez <- c(rna.up.entrez, new.entrez)
+}
+
+# 
+rna.do.entrez <- c()
+for (name in rna.do) {
+	short <- dict$short.name[which(dict$mRNA_ID == name)]
+	new.entrez <- entrez.dict$Entrez_GeneID[which(entrez.dict$Symbol == short)]
+	
+	rna.do.entrez <- c(rna.do.entrez, new.entrez)
+}
+```
+
+Same thing for proteins.
+
+```{r}
+cond1.p  <- {(A3.p - err > A2.p) & (A2.p + err > A1.p)}
+cond2.p  <- {(A2.p - err > A1.p) & (A3.p + err > A2.p)}
+cond2B.p <- {(A3.p - err > A1.p) & (A2.p + err > A1.p) & (A2.p - err < A1.p)}
+
+cond3.p  <- {(A3.p + err < A2.p) & (A2.p < A1.p + err)}
+cond4.p  <- {(A2.p + err < A1.p) & (A3.p < A2.p + err)}
+cond4B.p <- {(A3.p + err < A1.p) & (A2.p + err < A1.p) & (A2.p - err > A1.p)}
+
+pro.up <- pro.fit[cond1.p | cond2.p | cond2B.p , 1]
+pro.do <- pro.fit[cond3.p | cond4.p | cond4B.p , 1]
+
+sum(pro.up %in% pro.do)
+```
+
+Again, no overlap here.
+
+```{r}
+pro.up.entrez <- c()
+for (name in pro.up) {
+	short <- dict$short.name[which(dict$Protein_id == name)]
+	new.entrez <- entrez.dict$Entrez_GeneID[which(entrez.dict$Symbol == short)]
+	
+	pro.up.entrez <- c(pro.up.entrez, new.entrez)
+}
+
+# 
+pro.do.entrez <- c()
+for (name in pro.do) {
+	short <- dict$short.name[which(dict$Protein_id == name)]
+	new.entrez <- entrez.dict$Entrez_GeneID[which(entrez.dict$Symbol == short)]
+	
+	pro.do.entrez <- c(pro.do.entrez, new.entrez)
+}
+```
+
+
+#### GO term enrichment using the DAVID API
+
+The [RDAVIDWebService](http://bioinformatics.oxfordjournals.org/content/29/21/2810)[3] package allows us to run DAVID queries from R instead of having to navigate through the (slightly clunky) DAVID website. You will need to register your email on the site before you run these queries, however. Using the interface is pretty straightforward. We create 4 david elements, one for each category list we plan to run.
+
+```{r, eval = F}
+# Add link to sign up
+david1 <- DAVIDWebService(email="spencer.woody@utexas.edu", 
+url="https://david.ncifcrf.gov/webservice/services/DAVIDWebService.DAVIDWebServiceHttpSoap12Endpoint/")
+
+david2 <- DAVIDWebService(email="spencer.woody@utexas.edu", 
+url="https://david.ncifcrf.gov/webservice/services/DAVIDWebService.DAVIDWebServiceHttpSoap12Endpoint/")
+
+david3 <- DAVIDWebService(email="spencer.woody@utexas.edu", 
+url="https://david.ncifcrf.gov/webservice/services/DAVIDWebService.DAVIDWebServiceHttpSoap12Endpoint/")
+
+david4 <- DAVIDWebService(email="spencer.woody@utexas.edu", 
+url="https://david.ncifcrf.gov/webservice/services/DAVIDWebService.DAVIDWebServiceHttpSoap12Endpoint/")
+```
+
+Add our lists of Entrez IDs.
+
+```{r, eval = F}
+result1 <- addList(david1, rna.up.entrez, idType = "ENTREZ_GENE_ID", 
+listName = "rna.up", listType = "Gene")
+
+result2 <- addList(david2, rna.do.entrez, idType = "ENTREZ_GENE_ID", 
+listName = "rna.do", listType = "Gene")
+
+result3 <- addList(david3, pro.up.entrez, idType = "ENTREZ_GENE_ID", 
+listName = "rna.up", listType = "Gene")
+
+result4 <- addList(david4, pro.do.entrez, idType = "ENTREZ_GENE_ID", 
+listName = "rna.up", listType = "Gene")
+
+david1
+david2
+david3
+david4
+
+setAnnotationCategories(david1, "GOTERM_BP_FAT")
+setAnnotationCategories(david2, "GOTERM_BP_FAT")
+setAnnotationCategories(david3, "GOTERM_BP_FAT")
+setAnnotationCategories(david4, "GOTERM_BP_FAT")
+```
+
+Perform functional clustering by writing them as R objects. We can also save them to tsv files.
+
+```{r, eval = F}
+FuncAnnotChart.rna.up <- getFunctionalAnnotationChart(david1)
+FuncAnnotChart.rna.do <- getFunctionalAnnotationChart(david2)
+FuncAnnotChart.pro.up <- getFunctionalAnnotationChart(david3)
+FuncAnnotChart.pro.do <- getFunctionalAnnotationChart(david4)
+
+getFunctionalAnnotationChartFile(david1, "Results/FuncAnnotChart_rna_up.tsv")
+getFunctionalAnnotationChartFile(david2, "Results/FuncAnnotChart_rna_do.tsv")
+getFunctionalAnnotationChartFile(david3, "Results/FuncAnnotChart_pro_up.tsv")
+getFunctionalAnnotationChartFile(david4, "Results/FuncAnnotChart_pro_do.tsv")
+```
+
+Now we can Look at the GO terms for each category functional clustering for each term. For up-regulated RNAs:
+
+```{r, eval = F}
+FuncAnnotChart.rna.up$Term
+```
+
+```{r,echo=F}
+ru <- read.table("Results/FuncAnnotChart_rna_up.tsv", header = T, sep = "\t")
+ru$Term
+```
+
+
+Down-regulated RNAs:
+
+```{r, eval = F}
+FuncAnnotChart.rna.do$Term
+```
+```{r,echo=F}
+rd <- read.table("Results/FuncAnnotChart_rna_do.tsv", header = T, sep = "\t")
+rd$Term
+```
+
+Up-regulated proteins:
+
+```{r, eval = F}
+FuncAnnotChart.pro.up$Term
+```
+```{r,echo=F}
+pu <- read.table("Results/FuncAnnotChart_pro_up.tsv", header = T, sep = "\t")
+pu$Term
+```
+
+Down-regulated proteins:
+
+```{r, eval = F}
+FuncAnnotChart.pro.do$Term
+```
+```{r,echo=F}
+pd <- read.table("Results/FuncAnnotChart_pro_do.tsv", header = T, sep = "\t")
+pd$Term
+```
+
+There is a lot of information to unpack here, but we can see a clear distinction between cellular processes for which RNAs and proteins are down- and up-regulated. Down-regulated cellular processes include ones which are energy-intensive, such as locomotion, translation, gene expression, and various biosynthetic processes. However, up-regulated cellular processes include those involved in catabolism, the process of breaking down cellular components for self-sustainability. There are many more down-regulated terms than up-regulated terms. These results suggest that *E. coli* seek to conserve energy by throttling down on high energy-burden activities and preparing to catabolise for sustanance.
+
+## Discussion
+
+Overall, with the exception of calculating intra-operon correlations, I was successful in replicating the results of the paper using highly reproducable and legible R code and `ggplot` graphics. As measured by the optimal number of clusters of time courses, RNAs are more uniformly regulated on a global level than proteins, though the numbers of clusters chosen in the paper for both are too high. We can assess the post-transcriptional regulation of proteins by calculating their proportional and integral correlations with their transcripts. Those which are integrally regulated with respect to their transcript are buffered against drastic changes in their transcripts. While I could not replicate the histogram of median correlation coefficients of intra-operon RNAs and proteins, my results still showed that RNAs in the same operon are more likely to be highly correlated than proteins in the same operon. Finally, and most importantly, I was able to fit an estimated continuous piecewise-linear curve of the expression profile of each measure cellular component which seems to describe the data well and lends itself well to categorization into up- and down-regulation. This fitting was performed by optimizing a cost function associated with each component with the Nelder-Mead method. Once this fitting and categorization was performed, I submitted these lists of genes to DAVID to perform GO term enrichment, from which we can analyze the cellular processes associated with the genes in each of these cateogories. 
+
+In the future, I would like to do more investigation into the finding a more robust model to fit expression profiles, which can still be used for classification but from which it is easier to derive standard errors of parameters and is also less prone to overfitting. Additionally, I would like to replicate the images in Figure 4 of the paper, which shows the average time courses of genes in the same term. It took me a while to get `RDAVIDWebService` working on my laptop, and I experienced many difficulties with the DAVID server being down, so I was only able to run queries to DAVID right before this project was due. Finally, I want to also investigate the other subjects explored in the paper, namely flux analysis and lipid analysis.
+
+## References
+
+1. Houser, John R., Craig Barnhart, Daniel R. Boutz, Sean M. Carroll, Aurko Dasgupta, Joshua K. Michener, Brittany D. Needham, Ophelia Papoulas, Viswanadham Sridhara, Dariya K. Sydykova, Christopher J. Marx, M. Stephen Trent, Jeffrey E. Barrick, Edward M. Marcotte, and Claus O. Wilke. "Controlled Measurement and Comparative Analysis of Cellular Components in *E. Coli* Reveals Broad Regulatory Changes in Response to Glucose Starvation." *PLOS Computational Biology* 11.8 (2015): n. pag. Web. URL <http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1004400>
+
+2. Simon Anders and Wolfgang Huber (2010): "Differential expression
+ analysis for sequence count data." *Genome Biology* 11:R106. URL <http://genomebiology.com/2010/11/10/R106/>
+
+3. Cristobal Fresno, Elmer A. Fernandez (2013). "RDAVIDWebService: a
+  versatile R interface to DAVID Bioinformatics, 29(21), 2810-2811. URL
+  <http://bioinformatics.oxfordjournals.org/content/29/21/2810>.
