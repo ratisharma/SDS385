@@ -1,9 +1,12 @@
 # Written by Spencer Woody on 6 Nov 2016
 
-library(ggplot2)
-library(reshape2)
-library(caTools)
-library(RDAVIDWebService)
+library(ggplot2)          # plotting
+library(gridExtra)        # make a grid with ggplot
+library(reshape2)         # melt function
+library(caTools)          # trapz function
+library(foreach)          # faster for-loops
+library(doParallel)       # works with foreach
+library(RDAVIDWebService) # run queries to DAVID API
 
 # Use this to install RDAVIDWebService
 # source("https://bioconductor.org/biocLite.R")
