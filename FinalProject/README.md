@@ -6,7 +6,12 @@
 This is my final project for SDS 385 fall semester 2016. Here I present a walkthrough of the 2015 paper ["Controlled Measurement and Comparative Analysis of Cellular Components in *E. coli* Reveals Broad Regulatory Changes in Response to Glucose Starvation"][1] by Houser et al. written in R and presented in [R Markdown](http://rmarkdown.rstudio.com)
 
 ### How to view this project
-*For best results*, download the `project.html` file (click [here][2] and hit `Cmd + S`) and open it in your browser. On my laptop, the TeX equations and plots only render in Safari. I have not figured out how to get github to host my html page yet, but hopefully I will have that up soon. Oh, and you'll need to have an Internet connection to render the equations. ~~Alternatively, you can also look at `project.pdf` , (click [here]) but I have formatted my report with the intent of it being viewed as a webpage.~~ well it loks like RStudio is not compiling my Rmd into TeX, so looks like HTML will have to do for now. Sorry about that!
+
+UPDATE 01-23-2016
+
+[Got it hosted on github now! Just click here.](https://spencerwoody.github.io/SDS385/FinalProject/) 
+
+~~*For best results*, download the `project.html` file (click [here][2] and hit `Cmd + S`) and open it in your browser. On my laptop, the TeX equations and plots only render in Safari. I have not figured out how to get github to host my html page yet, but hopefully I will have that up soon. Oh, and you'll need to have an Internet connection to render the equations. Alternatively, you can also look at `project.pdf` , (click [here]) but I have formatted my report with the intent of it being viewed as a webpage. well it loks like RStudio is not compiling my Rmd into TeX, so looks like HTML will have to do for now. Sorry about that!~~
 
 ### Code
 
